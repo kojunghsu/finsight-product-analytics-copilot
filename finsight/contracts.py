@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -9,13 +9,19 @@ class AnalysisType(str, Enum):
     FUNNEL = "funnel"
     SEGMENT = "segmentation"
     EXPERIMENT = "experiment"
+    UNSUPPORTED = "unsupported"
+
+
+class FilterClause(BaseModel):
+    column: Literal["device", "acquisition_channel", "customer_segment", "experiment_group"]
+    value: str
 
 
 class AnalysisPlan(BaseModel):
     analysis_type: AnalysisType
-    metric: str = "activation_rate"
-    dimension: str | None = None
-    filters: dict[str, str] = Field(default_factory=dict)
+    metric: str
+    dimension: str | None
+    filters: list[FilterClause]
     rationale: str
 
 

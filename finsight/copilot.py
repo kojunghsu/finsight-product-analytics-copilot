@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Callable
+from collections.abc import Callable
 
 import pandas as pd
 
@@ -14,12 +14,15 @@ ALLOWED_SCHEMA = {
 }
 
 PLANNER_PROMPT = """You are FinSight's product-analytics planner. Translate one business question into exactly one bounded analysis plan.
-Only use KPI definition, funnel, segmentation, or experiment analysis. Never calculate numbers. Never invent columns.
-Use only this allowlist: {schema}. Choose activation_rate by default. Use filters only for explicit user constraints."""
+Only use KPI definition, funnel, segmentation, experiment analysis, or unsupported. Never calculate numbers. Never invent columns.
+Use only this allowlist: {schema}. Choose activation_rate by default. Use filters only for explicit user constraints.
+For experiment analysis, always return an empty filters list and a null dimension because the deterministic engine must compare the complete Control and Treatment groups. Do not describe treatment exposure as a filter.
+If the question asks for prediction, forecasting, regression, causal analysis outside the randomized experiment, arbitrary exploration, or any unsupported capability, return analysis_type unsupported with null dimension, empty filters, and a short rationale. Do not force it into a supported workflow."""
 
 INTERPRETER_PROMPT = """You are FinSight's product analytics interpreter. Explain the supplied deterministic result to a product manager.
 Lead with the finding, cite the key numbers, state statistical/descriptive limitations, and give one bounded next step.
-Never recalculate, alter, or invent a number. Avoid causal language unless the result is a randomized experiment."""
+Never recalculate, alter, or invent a number, field, metric, segment, or data source. A next step may reference only fields and dimensions in the supplied schema allowlist. Avoid causal language unless the result is a randomized experiment.
+For randomized experiments, describe lift as an estimated treatment effect under the random-assignment assumption. If sample-ratio mismatch was not tested, never say the change is ready for full rollout; call it a candidate for phased rollout only after integrity and operational checks. Use human-readable business labels in prose, never snake_case field names."""
 
 
 class Copilot:
@@ -51,9 +54,26 @@ class Copilot:
     def run(self, df: pd.DataFrame, plan: AnalysisPlan) -> AnalysisResult:
         tools: dict[AnalysisType, Callable[[], AnalysisResult]] = {
             AnalysisType.KPI: lambda: define_kpis(df),
-            AnalysisType.FUNNEL: lambda: funnel_analysis(df, plan.filters),
+            AnalysisType.FUNNEL: lambda: funnel_analysis(
+                df, {item.column: item.value for item in plan.filters}
+            ),
             AnalysisType.SEGMENT: lambda: segment_analysis(df, plan.metric, plan.dimension or "device"),
             AnalysisType.EXPERIMENT: lambda: experiment_analysis(df, plan.metric),
+            AnalysisType.UNSUPPORTED: lambda: AnalysisResult(
+                analysis_type=AnalysisType.UNSUPPORTED,
+                title="Unsupported request",
+                summary={
+                    "supported_workflows": [
+                        "KPI definition",
+                        "funnel analysis",
+                        "customer segmentation",
+                        "A/B experiment evaluation",
+                    ]
+                },
+                notes=[
+                    "FinSight did not run an analysis because the request is outside the governed MVP scope."
+                ],
+            ),
         }
         return tools[plan.analysis_type]()
 
@@ -63,7 +83,14 @@ class Copilot:
         response = self.client.responses.create(
             model=self.model,
             instructions=INTERPRETER_PROMPT,
-            input=json.dumps({"question": question, "plan": plan.model_dump(mode="json"), "result": result.model_dump(mode="json")}),
+            input=json.dumps(
+                {
+                    "question": question,
+                    "schema_allowlist": ALLOWED_SCHEMA,
+                    "plan": plan.model_dump(mode="json"),
+                    "result": result.model_dump(mode="json"),
+                }
+            ),
         )
         return response.output_text
 
@@ -76,6 +103,17 @@ class Copilot:
     def _demo_plan(question: str) -> AnalysisPlan:
         q = question.casefold()
         if any(
+            word in q
+            for word in [
+                "predict",
+                "forecast",
+                "regression",
+                "churn model",
+                "machine learning",
+            ]
+        ):
+            kind = AnalysisType.UNSUPPORTED
+        elif any(
             word in q
             for word in [
                 "experiment",
@@ -97,7 +135,13 @@ class Copilot:
         else:
             kind = AnalysisType.KPI
         dimension = "acquisition_channel" if "channel" in q else "customer_segment" if "segment" in q else "device"
-        return AnalysisPlan(analysis_type=kind, metric="activation_rate", dimension=dimension, rationale="Offline demo routing based on bounded keywords.")
+        return AnalysisPlan(
+            analysis_type=kind,
+            metric="activation_rate",
+            dimension=dimension,
+            filters=[],
+            rationale="Offline demo routing based on bounded keywords.",
+        )
 
     @staticmethod
     def _demo_interpret(result: AnalysisResult) -> str:
@@ -109,4 +153,6 @@ class Copilot:
             return f"The largest loss occurs before {s['largest_drop_off_before']}: {s['lost_customers']:,} customers. Segment this step by device and acquisition channel next."
         if result.analysis_type == AnalysisType.SEGMENT:
             return f"{s['lowest_segment']} has the lowest observed rate at {s['lowest_rate']:.1%}. This is descriptive; investigate mix and journey differences before attributing a cause."
+        if result.analysis_type == AnalysisType.UNSUPPORTED:
+            return "That request is outside FinSight's governed MVP. I can help define onboarding KPIs, analyze the onboarding funnel, compare approved customer segments, or evaluate the existing A/B experiment."
         return f"The KPI framework covers {s['customers']:,} customers and uses activation rate as the primary onboarding outcome, supported by verification, first-transaction, and 30-day engagement metrics."

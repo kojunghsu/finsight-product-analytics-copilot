@@ -24,7 +24,12 @@ METRICS = {
 
 def validate_data(df: pd.DataFrame) -> None:
     required = {column for _, column in FUNNEL_STEPS} | {
-        "customer_id", "device", "acquisition_channel", "customer_segment", "experiment_group"
+        "customer_id",
+        "device",
+        "acquisition_channel",
+        "customer_segment",
+        "experiment_group",
+        "spend_30d",
     }
     missing = required - set(df.columns)
     if missing:

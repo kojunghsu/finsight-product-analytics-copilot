@@ -2,7 +2,9 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
+from openai import OpenAIError
 
+from finsight.analytics import validate_data
 from finsight.copilot import Copilot
 from finsight.synthetic import generate_onboarding_data
 
@@ -14,14 +16,33 @@ st.caption("LLM-powered product analytics copilot for digital-banking onboarding
 with st.sidebar:
     st.header("Data")
     uploaded = st.file_uploader("Upload onboarding CSV", type="csv")
-    sample_size = st.select_slider("Synthetic customers", [5_000, 10_000, 30_000, 50_000], value=30_000)
-    st.caption("No uploaded data? FinSight generates a reproducible synthetic cohort.")
+    sample_size = st.select_slider(
+        "Synthetic customers",
+        [5_000, 10_000, 30_000, 50_000],
+        value=30_000,
+        disabled=uploaded is not None,
+    )
+    if not uploaded:
+        st.caption("No uploaded data? FinSight generates a reproducible synthetic cohort.")
 
 @st.cache_data
 def sample_data(n: int) -> pd.DataFrame:
     return generate_onboarding_data(n=n)
 
-df = pd.read_csv(uploaded, parse_dates=["signup_date"]) if uploaded else sample_data(sample_size)
+if uploaded:
+    try:
+        df = pd.read_csv(uploaded)
+        validate_data(df)
+        if "signup_date" in df.columns:
+            df["signup_date"] = pd.to_datetime(df["signup_date"], errors="coerce")
+        with st.sidebar:
+            st.success("Uploaded CSV active")
+    except (ValueError, pd.errors.ParserError) as exc:
+        st.error(f"This CSV cannot be analyzed: {exc}")
+        st.info("Upload a CSV that follows the FinSight data contract described in README.md.")
+        st.stop()
+else:
+    df = sample_data(sample_size)
 copilot = Copilot()
 
 c1, c2, c3, c4 = st.columns(4)
@@ -29,7 +50,10 @@ c1.metric("Customers", f"{len(df):,}")
 c2.metric("Verified", f"{df.identity_verified.mean():.1%}")
 c3.metric("Activated", f"{df.card_activated.mean():.1%}")
 c4.metric("30-day active", f"{df.active_30d.mean():.1%}")
-st.info(f"Mode: {copilot.mode}. Add OPENAI_API_KEY to enable LLM planning and interpretation; calculations always remain deterministic Python.")
+if copilot.client:
+    st.info("Mode: OpenAI LLM. The model plans and interprets; calculations remain deterministic Python.")
+else:
+    st.info("Mode: Deterministic demo. Add OPENAI_API_KEY to enable LLM planning and interpretation; calculations remain deterministic Python.")
 
 examples = [
     "What should we measure for onboarding?",
@@ -53,15 +77,103 @@ if question:
             st.caption(f"Routed to: {plan.analysis_type.value} · {plan.rationale}")
             table = pd.DataFrame(result.table)
             if not table.empty:
-                st.dataframe(table, use_container_width=True, hide_index=True)
+                st.dataframe(table, width="stretch", hide_index=True)
                 if "rate" in table.columns:
                     category = next(c for c in table.columns if c not in {"rate", "customers", "conversions"})
-                    st.altair_chart(alt.Chart(table).mark_bar().encode(x=alt.X(f"{category}:N", sort="-y"), y=alt.Y("rate:Q", axis=alt.Axis(format="%")), tooltip=list(table.columns)).properties(height=300), use_container_width=True)
+                    category_title = category.replace("_", " ").title()
+                    if category == "group":
+                        group_order = ["Control", "Treatment"]
+                        base = alt.Chart(table).encode(
+                            y=alt.Y(
+                                "group:N",
+                                sort=group_order,
+                                title=None,
+                                axis=alt.Axis(labelFontSize=13),
+                            ),
+                            x=alt.X(
+                                "rate:Q",
+                                scale=alt.Scale(domain=[0, 0.7]),
+                                axis=alt.Axis(format="%"),
+                                title="Activation rate",
+                            ),
+                        )
+                        bars = base.mark_bar(cornerRadiusEnd=5, height=32).encode(
+                            color=alt.Color(
+                                "group:N",
+                                sort=group_order,
+                                scale=alt.Scale(
+                                    domain=group_order,
+                                    range=["#64748B", "#FF4B4B"],
+                                ),
+                                legend=None,
+                            ),
+                            tooltip=[
+                                alt.Tooltip("group:N", title="Experiment group"),
+                                alt.Tooltip("customers:Q", title="Customers", format=","),
+                                alt.Tooltip("conversions:Q", title="Conversions", format=","),
+                                alt.Tooltip("rate:Q", title="Activation rate", format=".1%"),
+                            ],
+                        )
+                        labels = base.mark_text(
+                            align="left", baseline="middle", dx=8, fontSize=14, fontWeight="bold"
+                        ).encode(text=alt.Text("rate:Q", format=".1%"))
+                        st.subheader("Activation rate by experiment group")
+                        st.altair_chart(
+                            (bars + labels).properties(height=150),
+                            width="stretch",
+                        )
+                    else:
+                        st.altair_chart(
+                            alt.Chart(table)
+                            .mark_bar()
+                            .encode(
+                                x=alt.X(f"{category}:N", sort="-y", title=category_title),
+                                y=alt.Y(
+                                    "rate:Q",
+                                    axis=alt.Axis(format="%"),
+                                    title="Activation rate",
+                                ),
+                                tooltip=list(table.columns),
+                            )
+                            .properties(height=300),
+                            width="stretch",
+                        )
                 elif "overall_conversion" in table.columns:
-                    st.altair_chart(alt.Chart(table).mark_bar().encode(x=alt.X("step:N", sort=None), y=alt.Y("overall_conversion:Q", axis=alt.Axis(format="%")), tooltip=list(table.columns)).properties(height=300), use_container_width=True)
+                    st.altair_chart(
+                        alt.Chart(table)
+                        .mark_bar()
+                        .encode(
+                            x=alt.X(
+                                "overall_conversion:Q",
+                                axis=alt.Axis(format="%"),
+                                title="Overall conversion rate",
+                            ),
+                            y=alt.Y(
+                                "step:N",
+                                sort=list(table["step"]),
+                                title="Onboarding stage",
+                            ),
+                            tooltip=[
+                                alt.Tooltip("step:N", title="Onboarding stage"),
+                                alt.Tooltip("customers:Q", title="Customers", format=","),
+                                alt.Tooltip(
+                                    "overall_conversion:Q",
+                                    title="Overall conversion",
+                                    format=".1%",
+                                ),
+                                alt.Tooltip(
+                                    "step_conversion:Q",
+                                    title="Step conversion",
+                                    format=".1%",
+                                ),
+                            ],
+                        )
+                        .properties(height=300),
+                        width="stretch",
+                    )
             with st.expander("Audit trail"):
                 st.json({"plan": plan.model_dump(mode="json"), "result": result.model_dump(mode="json")})
-    except Exception as exc:
+    except (OpenAIError, ValueError) as exc:
         st.error(f"Analysis could not run: {exc}")
 
 st.divider()

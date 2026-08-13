@@ -28,11 +28,11 @@ The synthetic generator intentionally embeds testable patterns: Android and Paid
 ## Local setup
 
 ```bash
-python3.11 -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
-pip install -e '.[dev]'
+python3 -m pip install -e '.[dev]'
 cp .env.example .env
-streamlit run app.py
+python3 -m streamlit run app.py
 ```
 
 To enable real LLM planning and interpretation, add `OPENAI_API_KEY` to `.env`. The default model can be changed with `OPENAI_MODEL`. Without a key, the complete UI and analytics engine run in clearly labeled deterministic demo mode.
@@ -40,19 +40,19 @@ To enable real LLM planning and interpretation, add `OPENAI_API_KEY` to `.env`. 
 Generate a CSV explicitly:
 
 ```bash
-python scripts/generate_data.py --rows 30000 --output data/onboarding.csv
+python3 scripts/generate_data.py --rows 30000 --output data/onboarding.csv
 ```
 
 Run validation:
 
 ```bash
-pytest
-ruff check .
+python3 -m pytest
+python3 -m ruff check .
 ```
 
 ## Data contract
 
-Uploaded CSVs must contain `customer_id`, `device`, `acquisition_channel`, `customer_segment`, `experiment_group`, and the sequential binary event columns `signed_up`, `identity_verified`, `card_activated`, `first_transaction`, and `active_30d`. The bundled demo additionally uses `signup_date`, `transactions_30d`, and `spend_30d`.
+Uploaded CSVs must contain `customer_id`, `device`, `acquisition_channel`, `customer_segment`, `experiment_group`, `spend_30d`, and the sequential binary event columns `signed_up`, `identity_verified`, `card_activated`, `first_transaction`, and `active_30d`. The bundled demo additionally includes optional `signup_date` and `transactions_30d` fields.
 
 ## Repository guide
 
@@ -62,6 +62,7 @@ Uploaded CSVs must contain `customer_id`, `device`, `acquisition_channel`, `cust
 - `finsight/synthetic.py` — reproducible synthetic banking data
 - `docs/ARCHITECTURE.md` — system contract, boundaries, and production hardening
 - `docs/BUSINESS_PLAN.md` — users, value proposition, landscape, pricing, GTM, risks, roadmap
+- `docs/PRODUCT_SPEC.md` — workflows, requirements, error states, non-goals, acceptance criteria
 - `tests/` — analytical ground-truth and routing tests
 
 ## Scope and limitations
@@ -76,6 +77,7 @@ FinSight demonstrates product KPI design, funnel and customer analysis, controll
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Business plan](docs/BUSINESS_PLAN.md)
+- [Product specification](docs/PRODUCT_SPEC.md)
 
 ## License
 
