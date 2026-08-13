@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from html import escape
 
 import altair as alt
 import pandas as pd
@@ -85,6 +86,29 @@ st.markdown(
     [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button:hover {
         background: linear-gradient(135deg, #13C9BE, #00A6A6);
         border-color: rgba(255,255,255,.34);
+    }
+    .fs-selected-file {
+        margin: -2px 0 18px;
+        padding: 11px 13px;
+        border: 1px solid rgba(45,212,191,.42);
+        border-radius: 11px;
+        background: rgba(7,27,47,.66);
+    }
+    .fs-selected-file-label {
+        display: block;
+        margin-bottom: 3px;
+        color: #8FE3DA !important;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+    }
+    .fs-selected-file-name {
+        display: block;
+        color: #FFFFFF !important;
+        font-size: 14px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
     }
     .fs-hero {
         position: relative;
@@ -236,6 +260,17 @@ def experiment_decision_status(summary: dict) -> str:
 with st.sidebar:
     st.header("Data")
     uploaded = st.file_uploader("Upload onboarding CSV", type="csv")
+    if uploaded is not None:
+        safe_file_name = escape(uploaded.name)
+        st.markdown(
+            f"""
+            <div class="fs-selected-file">
+              <span class="fs-selected-file-label">Selected file</span>
+              <span class="fs-selected-file-name">{safe_file_name}</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
     sample_size = st.select_slider(
         "Synthetic customers",
         [5_000, 10_000, 30_000, 50_000],
