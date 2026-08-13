@@ -125,6 +125,8 @@ class Copilot:
             )
 
     def interpret(self, question: str, plan: AnalysisPlan, result: AnalysisResult) -> str:
+        if result.analysis_type == AnalysisType.SEGMENT and self._is_causal_question(question):
+            return self._causal_segment_interpret(plan, result)
         if not self.client:
             return self._demo_interpret(question, result)
         response = self.client.responses.create(
@@ -140,6 +142,36 @@ class Copilot:
             ),
         )
         return response.output_text
+
+    @staticmethod
+    def _is_causal_question(question: str) -> bool:
+        return any(
+            phrase in question.casefold()
+            for phrase in ["cause", "caused", "why", "driver", "drove", "explain"]
+        )
+
+    @staticmethod
+    def _causal_segment_interpret(plan: AnalysisPlan, result: AnalysisResult) -> str:
+        dimension = plan.dimension or "device"
+        label = dimension.replace("_", " ")
+        rows = sorted(result.table, key=lambda row: float(row["rate"]))
+        observations = ", ".join(
+            f"{row[dimension]}: {float(row['rate']):.1%} ({int(row['customers']):,} customers)"
+            for row in rows
+        )
+        alternatives = {
+            "device": "acquisition channel or customer segment",
+            "acquisition_channel": "device or customer segment",
+            "customer_segment": "device or acquisition channel",
+        }
+        next_dimensions = alternatives.get(dimension, "another supported dimension")
+        return (
+            f"This analysis cannot determine what caused the difference; it is a descriptive comparison by {label}. "
+            f"Observed activation rates were {observations}. No statistical, practical-significance, cross-filtered, "
+            "multivariate, or causal driver test was run. Cross-filtered driver analysis is outside the current MVP. "
+            f"As a supported descriptive next step, compare overall activation by {next_dimensions}; this may reveal "
+            "another pattern but still will not establish causality."
+        )
 
     def answer(self, df: pd.DataFrame, question: str) -> tuple[AnalysisPlan, AnalysisResult, str]:
         plan = self.plan(question)
@@ -231,12 +263,6 @@ class Copilot:
         if result.analysis_type == AnalysisType.FUNNEL:
             return f"The largest loss occurs before {s['largest_drop_off_before']}: {s['lost_customers']:,} customers. Segment this step by device and acquisition channel next."
         if result.analysis_type == AnalysisType.SEGMENT:
-            causal_question = any(
-                phrase in question.casefold()
-                for phrase in ["cause", "caused", "why", "driver", "drove", "explain"]
-            )
-            if causal_question:
-                return f"This descriptive segmentation cannot determine what caused the difference. {s['lowest_segment']} had the lowest observed rate at {s['lowest_rate']:.1%}, but no statistical, practical-significance, cross-filtered, or causal driver test was supplied. A cross-filtered driver diagnostic could be useful, but it is outside the current MVP."
             return f"{s['lowest_segment']} has the lowest observed rate at {s['lowest_rate']:.1%}. This is descriptive; investigate mix and journey differences before attributing a cause."
         if result.analysis_type == AnalysisType.ENGAGEMENT:
             return f"This dataset supports engagement and spend analysis for {s['customers']:,} customers; {s['active_customers']:,} were active within 30 days. Review the KPI table for usage and spend depth."

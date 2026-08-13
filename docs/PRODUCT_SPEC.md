@@ -89,6 +89,7 @@ Only Ready modules may run their complete analysis. FinSight must explain missin
 - Follow the deterministic experiment decision gate: investigate integrity, collect more data, gather more evidence, stop for a harmful guardrail, or consider only a phased rollout.
 - Describe device, acquisition-channel, and customer-segment experiment breakdowns as directional consistency checks without unadjusted subgroup significance claims.
 - For descriptive questions using causal language such as “what caused” or “why,” lead with the causal limitation, avoid unsupported significance or meaningfulness language, and label cross-filtered or causal driver analysis as outside the current MVP.
+- Render causal-question guardrails deterministically with human-readable percentages, and recommend only an executable overall comparison by another supported dimension—not a cross-filtered analysis.
 
 ### User interface
 

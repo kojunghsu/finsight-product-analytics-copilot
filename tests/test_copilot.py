@@ -31,8 +31,20 @@ def test_demo_causal_segment_question_refuses_unsupported_causal_claim():
         analysis_type=AnalysisType.SEGMENT,
         title="Activation rate by device",
         summary={"lowest_segment": "Android", "lowest_rate": 0.6493},
+        table=[
+            {"device": "Android", "customers": 134, "rate": 0.6493},
+            {"device": "iOS", "customers": 134, "rate": 0.6493},
+            {"device": "Web", "customers": 132, "rate": 0.6515},
+        ],
     )
-    answer = Copilot._demo_interpret("What caused Android customers to activate less?", result)
-    assert answer.startswith("This descriptive segmentation cannot determine what caused")
+    plan = Copilot(client=None).plan("What caused Android customers to activate less?")
+    answer = Copilot(client=None).interpret(
+        "What caused Android customers to activate less?", plan, result
+    )
+    assert answer.startswith("This analysis cannot determine what caused")
     assert "outside the current MVP" in answer
     assert "meaningful" not in answer
+    assert "Android: 64.9% (134 customers)" in answer
+    assert "0.6493" not in answer
+    assert "within device" not in answer
+    assert "compare overall activation by acquisition channel or customer segment" in answer
