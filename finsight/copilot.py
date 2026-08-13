@@ -217,7 +217,16 @@ class Copilot:
                 if smallest_group < 100
                 else ""
             )
-            return f"Treatment changed activation by {s['absolute_lift']:.1%} ({verdict}, p={s['p_value']:.3g}). The approximate 80%-power MDE is {s['approximate_mde_80']:.1%}. The 30-day engagement guardrail changed by {s['guardrail_30d_lift']:.1%}. The allocation check found {srm} (p={s['srm_p_value']:.3g}). Decision gate: {s['decision_status']}.{sample_guidance}"
+            mde_text = (
+                f" The approximate 80%-power MDE is {s['approximate_mde_80']:.1%}."
+                if "approximate_mde_80" in s
+                else ""
+            )
+            decision_status = s.get(
+                "decision_status",
+                "Candidate for phased rollout" if s["significant"] else "Needs more evidence",
+            )
+            return f"Treatment changed activation by {s['absolute_lift']:.1%} ({verdict}, p={s['p_value']:.3g}).{mde_text} The 30-day engagement guardrail changed by {s['guardrail_30d_lift']:.1%}. The allocation check found {srm} (p={s['srm_p_value']:.3g}). Decision gate: {decision_status}.{sample_guidance}"
         if result.analysis_type == AnalysisType.FUNNEL:
             return f"The largest loss occurs before {s['largest_drop_off_before']}: {s['lost_customers']:,} customers. Segment this step by device and acquisition channel next."
         if result.analysis_type == AnalysisType.SEGMENT:

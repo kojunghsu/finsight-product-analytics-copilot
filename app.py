@@ -34,6 +34,18 @@ DISPLAY_NAMES = {
     "customer_segment": "Customer segment",
 }
 
+
+def experiment_decision_status(summary: dict) -> str:
+    """Derive a safe label when Streamlit reloads before imported analytics modules."""
+    if status := summary.get("decision_status"):
+        return str(status)
+    if summary.get("srm_detected"):
+        return "Investigate experiment integrity"
+    if summary.get("significant") and summary.get("ci_95_low", 0) > 0:
+        return "Candidate for phased rollout"
+    return "Needs more evidence"
+
+
 with st.sidebar:
     st.header("Data")
     uploaded = st.file_uploader("Upload onboarding CSV", type="csv")
@@ -250,7 +262,7 @@ if question:
                 )
                 st.dataframe(display_table, width="stretch", hide_index=True)
                 if result.analysis_type.value == "experiment":
-                    decision_status = result.summary["decision_status"]
+                    decision_status = experiment_decision_status(result.summary)
                     if decision_status == "Candidate for phased rollout":
                         st.success(f"Decision gate: {decision_status}")
                     elif decision_status.startswith(("Do not roll out", "Investigate")):
@@ -266,9 +278,10 @@ if question:
                         f"{result.summary['ci_95_low']:.1%} to {result.summary['ci_95_high']:.1%}",
                     )
                     decision_columns[2].metric("p-value", f"{result.summary['p_value']:.3g}")
+                    approximate_mde = result.summary.get("approximate_mde_80")
                     decision_columns[3].metric(
                         "Approx. MDE (80% power)",
-                        f"{result.summary['approximate_mde_80']:.1%}",
+                        f"{approximate_mde:.1%}" if approximate_mde is not None else "Restart app",
                     )
                     st.caption(
                         "Decision gates support analyst review; they do not authorize rollout. "
