@@ -10,6 +10,22 @@
 4. The interpreter explains the immutable result and its limitations.
 5. The UI exposes the plan and raw result as an audit trail.
 
+### Data ingestion and schema normalization
+
+```mermaid
+flowchart LR
+    C["CSV upload"] --> D{"Required names present?"}
+    D -->|"Yes"| V["Python data-contract validation"]
+    D -->|"No"| S["Conservative alias suggestions"]
+    S --> H["Human mapping review"]
+    H --> N["Normalize confirmed column names"]
+    N --> V
+    V --> A["Activate dataset"]
+    A --> M["Record non-sensitive mapping metadata"]
+```
+
+Mapping suggestions do not change KPI definitions. The user confirms business-semantic equivalence before normalized data reaches any analytics workflow. The audit trail records file-level provenance and confirmed source-to-target mappings, but not row-level customer data.
+
 ```mermaid
 flowchart LR
     Q["Business question"] --> P["LLM planner"]
@@ -33,6 +49,7 @@ flowchart LR
 - The experiment engine uses a two-sided two-proportion z-test and an unpooled 95% CI.
 - Segment analysis is descriptive. Experiment interpretation assumes random assignment.
 - No customer data is bundled; all demo records are synthetic.
+- Uploaded mappings are session-scoped and require explicit user confirmation.
 
 ## Production hardening
 

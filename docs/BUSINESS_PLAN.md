@@ -52,6 +52,12 @@ The LLM is responsible for:
 
 The LLM is not allowed to calculate metrics, execute arbitrary code, invent fields, or approve a rollout. This separation is the central product design, not an implementation detail.
 
+### Human-reviewed schema mapping
+
+Different banks may describe equivalent onboarding events with different names—for example, `kyc_completed` instead of `identity_verified`. FinSight can propose conservative alias matches, but it does not silently reinterpret an event. The user reviews each source-to-target mapping before Python validates the normalized dataset.
+
+This reduces setup friction without pretending that column-name similarity proves business equivalence. Confirmed mappings and file-level provenance appear in the audit trail, preserving accountability for the analytical definition.
+
 ## Product design
 
 ### Core journey

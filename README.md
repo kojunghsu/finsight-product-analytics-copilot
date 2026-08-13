@@ -56,6 +56,32 @@ Uploaded CSVs must contain `customer_id`, `device`, `acquisition_channel`, `cust
 
 If an uploaded file uses different column names, FinSight opens a schema-mapping review. It may preselect conservative alias matches, but a user must confirm every required mapping before Python validates or analyzes the data. FinSight never silently changes KPI definitions.
 
+### Upload and schema-mapping workflow
+
+1. Click **Upload** and select an onboarding CSV.
+2. If the file already follows the FinSight data contract, validation runs immediately.
+3. If required column names differ, review every suggestion in **Schema Mapping Review**.
+4. Correct any mapping whose business meaning is not equivalent to the FinSight target field.
+5. Map every required field and ensure that each uploaded column is used only once.
+6. Click **Apply confirmed mapping**.
+7. Verify **Uploaded CSV active** and the number of confirmed mappings in the sidebar.
+8. Ask a demo or free-form product analytics question.
+9. Expand **Audit trail** to review the file metadata, confirmed mappings, analysis plan, and deterministic result.
+
+Example:
+
+| Uploaded column | Confirmed FinSight field |
+|---|---|
+| `user_id` | `customer_id` |
+| `kyc_completed` | `identity_verified` |
+| `account_opened` | `card_activated` |
+| `first_purchase` | `first_transaction` |
+| `engaged_30d` | `active_30d` |
+
+Current mapping suggestions use conservative alias rules and string similarity, not unrestricted LLM guessing. Confirmation means that the user accepts the business-semantic equivalence; FinSight validates structure but cannot independently prove that two events have the same business definition.
+
+The audit trail records non-sensitive provenance metadata: source type, file name, file size, row count, confirmed source-to-target mappings, review status, and confirmation time. It does not include uploaded row-level customer data.
+
 ## Repository guide
 
 - `app.py` — Streamlit experience
@@ -65,6 +91,7 @@ If an uploaded file uses different column names, FinSight opens a schema-mapping
 - `docs/ARCHITECTURE.md` — system contract, boundaries, and production hardening
 - `docs/BUSINESS_PLAN.md` — users, value proposition, landscape, pricing, GTM, risks, roadmap
 - `docs/PRODUCT_SPEC.md` — workflows, requirements, error states, non-goals, acceptance criteria
+- `docs/SUBMISSION_GUIDE.md` — deliverables, demo sequence, validation, and submission safety
 - `tests/` — analytical ground-truth and routing tests
 
 ## Scope and limitations
@@ -80,6 +107,7 @@ FinSight demonstrates product KPI design, funnel and customer analysis, controll
 - [Architecture](docs/ARCHITECTURE.md)
 - [Business plan](docs/BUSINESS_PLAN.md)
 - [Product specification](docs/PRODUCT_SPEC.md)
+- [Assignment submission guide](docs/SUBMISSION_GUIDE.md)
 
 ## License
 

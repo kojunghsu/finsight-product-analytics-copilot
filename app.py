@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 import altair as alt
 import pandas as pd
 import streamlit as st
@@ -5,6 +7,7 @@ from dotenv import load_dotenv
 from openai import OpenAIError
 
 from finsight.analytics import REQUIRED_COLUMNS, validate_data
+from finsight.audit import build_data_context
 from finsight.copilot import Copilot
 from finsight.schema import suggest_mapping
 from finsight.synthetic import generate_onboarding_data
@@ -69,11 +72,20 @@ if uploaded:
                     elif len(set(selected.values())) != len(selected):
                         st.error("Each uploaded column can map to only one FinSight field.")
                     else:
-                        st.session_state[mapping_key] = selected
+                        st.session_state[mapping_key] = {
+                            "mapping": selected,
+                            "confirmed_at_utc": datetime.now(UTC).isoformat(),
+                        }
                         st.rerun()
             st.stop()
 
-        mapping = st.session_state.get(mapping_key, {})
+        mapping_record = st.session_state.get(mapping_key, {})
+        if "mapping" in mapping_record:
+            mapping = mapping_record["mapping"]
+            mapping_confirmed_at = mapping_record["confirmed_at_utc"]
+        else:
+            mapping = mapping_record
+            mapping_confirmed_at = None
         df = raw_df.rename(columns={source: target for target, source in mapping.items()})
         validate_data(df)
         if "signup_date" in df.columns:
@@ -82,12 +94,21 @@ if uploaded:
             st.success("Uploaded CSV active")
             if mapping:
                 st.caption(f"Confirmed schema mappings: {len(mapping)}")
+        data_context = build_data_context(
+            source_type="uploaded_csv",
+            file_name=uploaded.name,
+            file_size_bytes=uploaded.size,
+            rows=len(df),
+            mapping=mapping,
+            confirmed_at_utc=mapping_confirmed_at,
+        )
     except (ValueError, pd.errors.ParserError) as exc:
         st.error(f"This CSV cannot be analyzed: {exc}")
         st.info("Upload a CSV that follows the FinSight data contract described in README.md.")
         st.stop()
 else:
     df = sample_data(sample_size)
+    data_context = build_data_context(source_type="synthetic", rows=len(df))
 copilot = Copilot()
 
 c1, c2, c3, c4 = st.columns(4)
@@ -119,10 +140,27 @@ if question:
         plan, result, interpretation = copilot.answer(df, question)
         with st.chat_message("assistant"):
             st.write(interpretation)
-            st.caption(f"Routed to: {plan.analysis_type.value} · {plan.rationale}")
+            route_label = plan.analysis_type.value.replace("_", " ").title()
+            st.caption(f"Analysis workflow: {route_label}")
             table = pd.DataFrame(result.table)
             if not table.empty:
-                st.dataframe(table, width="stretch", hide_index=True)
+                display_table = table.copy()
+                for column in ["rate", "overall_conversion", "step_conversion"]:
+                    if column in display_table.columns:
+                        display_table[column] = display_table[column].map(lambda value: f"{value:.1%}")
+                for column in ["customers", "conversions", "drop_off"]:
+                    if column in display_table.columns:
+                        display_table[column] = display_table[column].map(lambda value: f"{value:,}")
+                if {"metric", "value"}.issubset(display_table.columns):
+                    display_table["metric"] = display_table["metric"].str.replace("_", " ").str.title()
+                    display_table["value"] = [
+                        f"${value:,.2f}" if metric == "average_spend_30d" else f"{value:.1%}"
+                        for metric, value in zip(table["metric"], table["value"], strict=True)
+                    ]
+                display_table = display_table.rename(
+                    columns={column: column.replace("_", " ").title() for column in display_table.columns}
+                )
+                st.dataframe(display_table, width="stretch", hide_index=True)
                 if "rate" in table.columns:
                     category = next(c for c in table.columns if c not in {"rate", "customers", "conversions"})
                     category_title = category.replace("_", " ").title()
@@ -217,7 +255,13 @@ if question:
                         width="stretch",
                     )
             with st.expander("Audit trail"):
-                st.json({"plan": plan.model_dump(mode="json"), "result": result.model_dump(mode="json")})
+                st.json(
+                    {
+                        "data_context": data_context,
+                        "plan": plan.model_dump(mode="json"),
+                        "result": result.model_dump(mode="json"),
+                    }
+                )
     except (OpenAIError, ValueError) as exc:
         st.error(f"Analysis could not run: {exc}")
 

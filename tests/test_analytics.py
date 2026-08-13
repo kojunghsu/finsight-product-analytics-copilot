@@ -1,6 +1,7 @@
 import pytest
 
 from finsight.analytics import experiment_analysis, funnel_analysis, segment_analysis
+from finsight.audit import build_data_context
 from finsight.schema import suggest_mapping
 from finsight.synthetic import generate_onboarding_data
 
@@ -37,3 +38,21 @@ def test_schema_mapping_suggests_known_aliases_only():
     assert suggest_mapping("identity_verified", columns) == "kyc_completed"
     assert suggest_mapping("first_transaction", columns) == "first_purchase"
     assert suggest_mapping("spend_30d", columns) is None
+
+
+def test_mapping_metadata_is_auditable_without_row_data():
+    context = build_data_context(
+        source_type="uploaded_csv",
+        file_name="example.csv",
+        file_size_bytes=1234,
+        rows=5000,
+        mapping={"customer_id": "user_id", "identity_verified": "kyc_completed"},
+        confirmed_at_utc="2026-08-13T01:00:00+00:00",
+    )
+    assert context["mapping_review_status"] == "user_confirmed"
+    assert context["rows"] == 5000
+    assert {item["source_column"] for item in context["schema_mapping"]} == {
+        "user_id",
+        "kyc_completed",
+    }
+    assert "data" not in context

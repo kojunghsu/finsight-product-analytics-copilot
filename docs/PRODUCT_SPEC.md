@@ -34,6 +34,22 @@ FinSight helps digital-banking product teams translate natural-language onboardi
 - Show a clear error without a traceback when the contract is invalid.
 - Never commit API keys or uploaded data to the repository.
 
+### Schema-mapping metadata contract
+
+After a user confirms renamed fields, the audit trail must expose non-sensitive provenance metadata:
+
+| Field | Purpose |
+|---|---|
+| `source_type` | Distinguish synthetic data from an uploaded CSV |
+| `file_name` | Identify the uploaded file used for the analysis |
+| `file_size_bytes` | Support basic provenance checks |
+| `rows` | Record the analyzed row count |
+| `schema_mapping` | List each confirmed source column and FinSight target field |
+| `mapping_review_status` | Distinguish `user_confirmed` from `not_required` |
+| `mapping_confirmed_at_utc` | Record when the mapping was accepted in the session |
+
+The metadata must not contain API keys or uploaded row-level records. Mapping is session-scoped in the MVP and is not persisted to a database.
+
 ### LLM planner
 
 - Return structured output matching the `AnalysisPlan` contract.
