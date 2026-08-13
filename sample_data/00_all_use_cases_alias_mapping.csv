@@ -1,17 +1,401 @@
 user_id,platform,marketing_source,user_segment,variant,application_started,kyc_completed,account_opened,first_purchase,engaged_30d,active_at_90_days,resumed_usage_90d,purchases_30d,spend_30_days
-C0001,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,6,142.50
-C0002,Android,Paid Search,Student,Treatment,1,1,1,1,1,1,0,5,118.25
-C0003,Web,Referral,Family,Control,1,1,1,1,0,1,1,3,74.00
-C0004,Android,Organic,Family,Treatment,1,1,1,1,1,1,0,8,210.75
-C0005,iOS,Paid Search,Student,Control,1,1,1,0,0,0,0,0,0.00
-C0006,Web,Organic,Young Professional,Treatment,1,1,1,1,1,1,0,7,184.30
-C0007,Android,Referral,Student,Control,1,1,0,0,0,0,0,0,0.00
-C0008,iOS,Organic,Family,Treatment,1,1,1,1,1,1,0,9,245.60
-C0009,Web,Paid Search,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
-C0010,Android,Referral,Family,Treatment,1,1,1,1,0,1,1,2,55.20
-C0011,iOS,Organic,Student,Control,1,1,1,1,1,1,0,4,96.40
-C0012,Web,Paid Search,Young Professional,Treatment,1,1,1,1,1,1,0,10,278.90
-C0013,Android,Organic,Family,Control,1,1,0,0,0,0,0,0,0.00
-C0014,iOS,Referral,Student,Treatment,1,1,1,1,1,1,0,6,135.10
-C0015,Web,Organic,Young Professional,Control,1,1,1,1,0,0,0,1,24.50
-C0016,Android,Paid Search,Family,Treatment,1,1,1,1,1,1,0,7,166.80
+C0001,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,2,36.00
+C0002,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,2,36.00
+C0003,Web,Paid Search,Family,Control,1,1,1,1,1,1,0,3,61.50
+C0004,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,3,61.50
+C0005,Android,Referral,Young Professional,Control,1,1,1,1,1,1,0,4,92.00
+C0006,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,4,92.00
+C0007,iOS,Organic,Family,Control,1,1,1,1,1,1,0,5,127.50
+C0008,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,5,127.50
+C0009,Web,Paid Search,Young Professional,Control,1,1,1,1,1,1,0,6,168.00
+C0010,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,6,168.00
+C0011,Android,Referral,Family,Control,1,1,1,1,1,1,0,7,213.50
+C0012,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,7,213.50
+C0013,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,8,264.00
+C0014,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,8,264.00
+C0015,Web,Paid Search,Family,Control,1,1,1,1,1,1,0,2,71.00
+C0016,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,2,71.00
+C0017,Android,Referral,Young Professional,Control,1,1,1,1,1,1,0,3,114.00
+C0018,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,3,114.00
+C0019,iOS,Organic,Family,Control,1,1,1,1,1,1,0,4,72.00
+C0020,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,4,72.00
+C0021,Web,Paid Search,Young Professional,Control,1,1,1,1,1,1,0,5,102.50
+C0022,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,5,102.50
+C0023,Android,Referral,Family,Control,1,1,1,1,1,1,0,6,138.00
+C0024,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,6,138.00
+C0025,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,7,178.50
+C0026,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,7,178.50
+C0027,Web,Paid Search,Family,Control,1,1,1,1,1,1,0,8,224.00
+C0028,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,8,224.00
+C0029,Android,Referral,Young Professional,Control,1,1,1,1,1,1,0,2,61.00
+C0030,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,2,61.00
+C0031,iOS,Organic,Family,Control,1,1,1,1,1,1,0,3,99.00
+C0032,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,3,99.00
+C0033,Web,Paid Search,Young Professional,Control,1,1,1,1,1,1,0,4,142.00
+C0034,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,4,142.00
+C0035,Android,Referral,Family,Control,1,1,1,1,1,1,0,5,190.00
+C0036,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,5,190.00
+C0037,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,6,108.00
+C0038,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,6,108.00
+C0039,Web,Paid Search,Family,Control,1,1,1,1,1,1,0,7,143.50
+C0040,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,7,143.50
+C0041,Android,Referral,Young Professional,Control,1,1,1,1,1,1,0,8,184.00
+C0042,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,8,184.00
+C0043,iOS,Organic,Family,Control,1,1,1,1,1,1,0,2,51.00
+C0044,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,2,51.00
+C0045,Web,Paid Search,Young Professional,Control,1,1,1,1,1,1,0,3,84.00
+C0046,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,3,84.00
+C0047,Android,Referral,Family,Control,1,1,1,1,1,1,0,4,122.00
+C0048,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,4,122.00
+C0049,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,5,165.00
+C0050,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,5,165.00
+C0051,Web,Paid Search,Family,Control,1,1,1,1,1,1,0,6,213.00
+C0052,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,6,213.00
+C0053,Android,Referral,Young Professional,Control,1,1,1,1,1,1,0,7,266.00
+C0054,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,7,266.00
+C0055,iOS,Organic,Family,Control,1,1,1,1,1,1,0,8,144.00
+C0056,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,8,144.00
+C0057,Web,Paid Search,Young Professional,Control,1,1,1,1,1,1,0,2,41.00
+C0058,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,2,41.00
+C0059,Android,Referral,Family,Control,1,1,1,1,1,1,0,3,69.00
+C0060,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,3,69.00
+C0061,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,4,102.00
+C0062,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,4,102.00
+C0063,Web,Paid Search,Family,Control,1,1,1,1,1,1,0,5,140.00
+C0064,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,5,140.00
+C0065,Android,Referral,Young Professional,Control,1,1,1,1,1,1,0,6,183.00
+C0066,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,6,183.00
+C0067,iOS,Organic,Family,Control,1,1,1,1,1,1,0,7,231.00
+C0068,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,7,231.00
+C0069,Web,Paid Search,Young Professional,Control,1,1,1,1,1,1,0,8,284.00
+C0070,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,8,284.00
+C0071,Android,Referral,Family,Control,1,1,1,1,1,1,0,2,76.00
+C0072,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,2,76.00
+C0073,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,3,54.00
+C0074,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,3,54.00
+C0075,Web,Paid Search,Family,Control,1,1,1,1,1,1,0,4,82.00
+C0076,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,4,82.00
+C0077,Android,Referral,Young Professional,Control,1,1,1,1,1,1,0,5,115.00
+C0078,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,5,115.00
+C0079,iOS,Organic,Family,Control,1,1,1,1,1,1,0,6,153.00
+C0080,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,6,153.00
+C0081,Web,Paid Search,Young Professional,Control,1,1,1,1,1,1,0,7,196.00
+C0082,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,7,196.00
+C0083,Android,Referral,Family,Control,1,1,1,1,1,1,0,8,244.00
+C0084,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,8,244.00
+C0085,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,2,66.00
+C0086,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,2,66.00
+C0087,Web,Paid Search,Family,Control,1,1,1,1,1,1,0,3,106.50
+C0088,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,3,106.50
+C0089,Android,Referral,Young Professional,Control,1,1,1,1,1,1,0,4,152.00
+C0090,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,4,152.00
+C0091,iOS,Organic,Family,Control,1,1,1,1,1,1,0,5,90.00
+C0092,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,5,90.00
+C0093,Web,Paid Search,Young Professional,Control,1,1,1,1,1,1,0,6,123.00
+C0094,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,6,123.00
+C0095,Android,Referral,Family,Control,1,1,1,1,1,1,0,7,161.00
+C0096,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,7,161.00
+C0097,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,8,204.00
+C0098,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,8,204.00
+C0099,Web,Paid Search,Family,Control,1,1,1,1,1,1,0,2,56.00
+C0100,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,2,56.00
+C0101,Android,Referral,Young Professional,Control,1,1,1,1,1,1,0,3,91.50
+C0102,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,3,91.50
+C0103,iOS,Organic,Family,Control,1,1,1,1,1,1,0,4,132.00
+C0104,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,4,132.00
+C0105,Web,Paid Search,Young Professional,Control,1,1,1,1,1,1,0,5,177.50
+C0106,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,5,177.50
+C0107,Android,Referral,Family,Control,1,1,1,1,1,1,0,6,228.00
+C0108,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,6,228.00
+C0109,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,7,126.00
+C0110,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,7,126.00
+C0111,Web,Paid Search,Family,Control,1,1,1,1,1,1,0,8,164.00
+C0112,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,8,164.00
+C0113,Android,Referral,Young Professional,Control,1,1,1,1,1,1,0,2,46.00
+C0114,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,2,46.00
+C0115,iOS,Organic,Family,Control,1,1,1,1,1,1,0,3,76.50
+C0116,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,3,76.50
+C0117,Web,Paid Search,Young Professional,Control,1,1,1,1,1,1,0,4,112.00
+C0118,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,4,112.00
+C0119,Android,Referral,Family,Control,1,1,1,1,1,1,0,5,152.50
+C0120,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,5,152.50
+C0121,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,6,198.00
+C0122,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,6,198.00
+C0123,Web,Paid Search,Family,Control,1,1,1,1,1,1,0,7,248.50
+C0124,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,7,248.50
+C0125,Android,Referral,Young Professional,Control,1,1,1,1,1,1,0,8,304.00
+C0126,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,8,304.00
+C0127,iOS,Organic,Family,Control,1,1,1,1,1,1,0,2,36.00
+C0128,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,2,36.00
+C0129,Web,Paid Search,Young Professional,Control,1,1,1,1,1,1,0,3,61.50
+C0130,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,3,61.50
+C0131,Android,Referral,Family,Control,1,1,1,1,1,1,0,4,92.00
+C0132,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,4,92.00
+C0133,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,5,127.50
+C0134,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,5,127.50
+C0135,Web,Paid Search,Family,Control,1,1,1,1,1,1,0,6,168.00
+C0136,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,6,168.00
+C0137,Android,Referral,Young Professional,Control,1,1,1,1,1,1,0,7,213.50
+C0138,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,7,213.50
+C0139,iOS,Organic,Family,Control,1,1,1,1,1,1,0,8,264.00
+C0140,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,8,264.00
+C0141,Web,Paid Search,Young Professional,Control,1,1,1,1,1,1,0,2,71.00
+C0142,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,2,71.00
+C0143,Android,Referral,Family,Control,1,1,1,1,1,1,0,3,114.00
+C0144,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,3,114.00
+C0145,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,4,72.00
+C0146,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,4,72.00
+C0147,Web,Paid Search,Family,Control,1,1,1,1,1,1,0,5,102.50
+C0148,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,5,102.50
+C0149,Android,Referral,Young Professional,Control,1,1,1,1,1,1,0,6,138.00
+C0150,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,6,138.00
+C0151,iOS,Organic,Family,Control,1,1,1,1,1,1,0,7,178.50
+C0152,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,7,178.50
+C0153,Web,Paid Search,Young Professional,Control,1,1,1,1,1,1,0,8,224.00
+C0154,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,8,224.00
+C0155,Android,Referral,Family,Control,1,1,1,1,1,1,0,2,61.00
+C0156,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,2,61.00
+C0157,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,3,99.00
+C0158,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,3,99.00
+C0159,Web,Paid Search,Family,Control,1,1,1,1,1,1,0,4,142.00
+C0160,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,4,142.00
+C0161,Android,Referral,Young Professional,Control,1,1,1,1,0,1,1,0,0.00
+C0162,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,5,190.00
+C0163,iOS,Organic,Family,Control,1,1,1,1,0,1,1,0,0.00
+C0164,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,6,108.00
+C0165,Web,Paid Search,Young Professional,Control,1,1,1,1,0,1,1,0,0.00
+C0166,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,7,143.50
+C0167,Android,Referral,Family,Control,1,1,1,1,0,1,1,0,0.00
+C0168,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,8,184.00
+C0169,iOS,Organic,Young Professional,Control,1,1,1,1,0,1,1,0,0.00
+C0170,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,2,51.00
+C0171,Web,Paid Search,Family,Control,1,1,1,1,0,1,1,0,0.00
+C0172,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,3,84.00
+C0173,Android,Referral,Young Professional,Control,1,1,1,1,0,1,1,0,0.00
+C0174,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,4,122.00
+C0175,iOS,Organic,Family,Control,1,1,1,1,0,1,1,0,0.00
+C0176,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,5,165.00
+C0177,Web,Paid Search,Young Professional,Control,1,1,1,1,0,1,1,0,0.00
+C0178,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,6,213.00
+C0179,Android,Referral,Family,Control,1,1,1,1,0,1,1,0,0.00
+C0180,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,7,266.00
+C0181,iOS,Organic,Young Professional,Control,1,1,1,1,0,1,1,0,0.00
+C0182,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,8,144.00
+C0183,Web,Paid Search,Family,Control,1,1,1,1,0,1,1,0,0.00
+C0184,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,2,41.00
+C0185,Android,Referral,Young Professional,Control,1,1,1,1,0,1,1,0,0.00
+C0186,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,3,69.00
+C0187,iOS,Organic,Family,Control,1,1,1,1,0,1,1,0,0.00
+C0188,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,4,102.00
+C0189,Web,Paid Search,Young Professional,Control,1,1,1,1,0,1,1,0,0.00
+C0190,iOS,Organic,Small Business,Treatment,1,1,1,1,1,1,0,5,140.00
+C0191,Android,Referral,Family,Control,1,1,1,1,0,0,0,0,0.00
+C0192,Web,Paid Search,Student,Treatment,1,1,1,1,1,1,0,6,183.00
+C0193,iOS,Organic,Young Professional,Control,1,1,1,1,0,0,0,0,0.00
+C0194,Android,Referral,Small Business,Treatment,1,1,1,1,1,1,0,7,231.00
+C0195,Web,Paid Search,Family,Control,1,1,1,1,0,0,0,0,0.00
+C0196,iOS,Organic,Student,Treatment,1,1,1,1,1,1,0,8,284.00
+C0197,Android,Referral,Young Professional,Control,1,1,1,1,0,0,0,0,0.00
+C0198,Web,Paid Search,Small Business,Treatment,1,1,1,1,1,1,0,2,76.00
+C0199,iOS,Organic,Family,Control,1,1,1,1,0,0,0,0,0.00
+C0200,Android,Referral,Student,Treatment,1,1,1,1,1,1,0,3,54.00
+C0201,Web,Paid Search,Young Professional,Control,1,1,1,1,0,0,0,0,0.00
+C0202,iOS,Organic,Small Business,Treatment,1,1,1,1,0,1,1,0,0.00
+C0203,Android,Referral,Family,Control,1,1,1,1,0,0,0,0,0.00
+C0204,Web,Paid Search,Student,Treatment,1,1,1,1,0,1,1,0,0.00
+C0205,iOS,Organic,Young Professional,Control,1,1,1,1,0,0,0,0,0.00
+C0206,Android,Referral,Small Business,Treatment,1,1,1,1,0,1,1,0,0.00
+C0207,Web,Paid Search,Family,Control,1,1,1,1,0,0,0,0,0.00
+C0208,iOS,Organic,Student,Treatment,1,1,1,1,0,1,1,0,0.00
+C0209,Android,Referral,Young Professional,Control,1,1,1,1,0,0,0,0,0.00
+C0210,Web,Paid Search,Small Business,Treatment,1,1,1,1,0,1,1,0,0.00
+C0211,iOS,Organic,Family,Control,1,1,1,0,0,0,0,0,0.00
+C0212,Android,Referral,Student,Treatment,1,1,1,1,0,1,1,0,0.00
+C0213,Web,Paid Search,Young Professional,Control,1,1,1,0,0,0,0,0,0.00
+C0214,iOS,Organic,Small Business,Treatment,1,1,1,1,0,1,1,0,0.00
+C0215,Android,Referral,Family,Control,1,1,1,0,0,0,0,0,0.00
+C0216,Web,Paid Search,Student,Treatment,1,1,1,1,0,1,1,0,0.00
+C0217,iOS,Organic,Young Professional,Control,1,1,1,0,0,0,0,0,0.00
+C0218,Android,Referral,Small Business,Treatment,1,1,1,1,0,1,1,0,0.00
+C0219,Web,Paid Search,Family,Control,1,1,1,0,0,0,0,0,0.00
+C0220,iOS,Organic,Student,Treatment,1,1,1,1,0,1,1,0,0.00
+C0221,Android,Referral,Young Professional,Control,1,1,1,0,0,0,0,0,0.00
+C0222,Web,Paid Search,Small Business,Treatment,1,1,1,1,0,1,1,0,0.00
+C0223,iOS,Organic,Family,Control,1,1,1,0,0,0,0,0,0.00
+C0224,Android,Referral,Student,Treatment,1,1,1,1,0,1,1,0,0.00
+C0225,Web,Paid Search,Young Professional,Control,1,1,1,0,0,0,0,0,0.00
+C0226,iOS,Organic,Small Business,Treatment,1,1,1,1,0,1,1,0,0.00
+C0227,Android,Referral,Family,Control,1,1,1,0,0,0,0,0,0.00
+C0228,Web,Paid Search,Student,Treatment,1,1,1,1,0,1,1,0,0.00
+C0229,iOS,Organic,Young Professional,Control,1,1,1,0,0,0,0,0,0.00
+C0230,Android,Referral,Small Business,Treatment,1,1,1,1,0,1,1,0,0.00
+C0231,Web,Paid Search,Family,Control,1,1,1,0,0,0,0,0,0.00
+C0232,iOS,Organic,Student,Treatment,1,1,1,1,0,0,0,0,0.00
+C0233,Android,Referral,Young Professional,Control,1,1,1,0,0,0,0,0,0.00
+C0234,Web,Paid Search,Small Business,Treatment,1,1,1,1,0,0,0,0,0.00
+C0235,iOS,Organic,Family,Control,1,1,1,0,0,0,0,0,0.00
+C0236,Android,Referral,Student,Treatment,1,1,1,1,0,0,0,0,0.00
+C0237,Web,Paid Search,Young Professional,Control,1,1,1,0,0,0,0,0,0.00
+C0238,iOS,Organic,Small Business,Treatment,1,1,1,1,0,0,0,0,0.00
+C0239,Android,Referral,Family,Control,1,1,1,0,0,0,0,0,0.00
+C0240,Web,Paid Search,Student,Treatment,1,1,1,1,0,0,0,0,0.00
+C0241,iOS,Organic,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0242,Android,Referral,Small Business,Treatment,1,1,1,1,0,0,0,0,0.00
+C0243,Web,Paid Search,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0244,iOS,Organic,Student,Treatment,1,1,1,1,0,0,0,0,0.00
+C0245,Android,Referral,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0246,Web,Paid Search,Small Business,Treatment,1,1,1,1,0,0,0,0,0.00
+C0247,iOS,Organic,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0248,Android,Referral,Student,Treatment,1,1,1,1,0,0,0,0,0.00
+C0249,Web,Paid Search,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0250,iOS,Organic,Small Business,Treatment,1,1,1,1,0,0,0,0,0.00
+C0251,Android,Referral,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0252,Web,Paid Search,Student,Treatment,1,1,1,0,0,0,0,0,0.00
+C0253,iOS,Organic,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0254,Android,Referral,Small Business,Treatment,1,1,1,0,0,0,0,0,0.00
+C0255,Web,Paid Search,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0256,iOS,Organic,Student,Treatment,1,1,1,0,0,0,0,0,0.00
+C0257,Android,Referral,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0258,Web,Paid Search,Small Business,Treatment,1,1,1,0,0,0,0,0,0.00
+C0259,iOS,Organic,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0260,Android,Referral,Student,Treatment,1,1,1,0,0,0,0,0,0.00
+C0261,Web,Paid Search,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0262,iOS,Organic,Small Business,Treatment,1,1,1,0,0,0,0,0,0.00
+C0263,Android,Referral,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0264,Web,Paid Search,Student,Treatment,1,1,1,0,0,0,0,0,0.00
+C0265,iOS,Organic,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0266,Android,Referral,Small Business,Treatment,1,1,1,0,0,0,0,0,0.00
+C0267,Web,Paid Search,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0268,iOS,Organic,Student,Treatment,1,1,1,0,0,0,0,0,0.00
+C0269,Android,Referral,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0270,Web,Paid Search,Small Business,Treatment,1,1,1,0,0,0,0,0,0.00
+C0271,iOS,Organic,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0272,Android,Referral,Student,Treatment,1,1,1,0,0,0,0,0,0.00
+C0273,Web,Paid Search,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0274,iOS,Organic,Small Business,Treatment,1,1,1,0,0,0,0,0,0.00
+C0275,Android,Referral,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0276,Web,Paid Search,Student,Treatment,1,1,1,0,0,0,0,0,0.00
+C0277,iOS,Organic,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0278,Android,Referral,Small Business,Treatment,1,1,1,0,0,0,0,0,0.00
+C0279,Web,Paid Search,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0280,iOS,Organic,Student,Treatment,1,1,1,0,0,0,0,0,0.00
+C0281,Android,Referral,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0282,Web,Paid Search,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0283,iOS,Organic,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0284,Android,Referral,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0285,Web,Paid Search,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0286,iOS,Organic,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0287,Android,Referral,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0288,Web,Paid Search,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0289,iOS,Organic,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0290,Android,Referral,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0291,Web,Paid Search,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0292,iOS,Organic,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0293,Android,Referral,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0294,Web,Paid Search,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0295,iOS,Organic,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0296,Android,Referral,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0297,Web,Paid Search,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0298,iOS,Organic,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0299,Android,Referral,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0300,Web,Paid Search,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0301,iOS,Organic,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0302,Android,Referral,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0303,Web,Paid Search,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0304,iOS,Organic,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0305,Android,Referral,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0306,Web,Paid Search,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0307,iOS,Organic,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0308,Android,Referral,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0309,Web,Paid Search,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0310,iOS,Organic,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0311,Android,Referral,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0312,Web,Paid Search,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0313,iOS,Organic,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0314,Android,Referral,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0315,Web,Paid Search,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0316,iOS,Organic,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0317,Android,Referral,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0318,Web,Paid Search,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0319,iOS,Organic,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0320,Android,Referral,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0321,Web,Paid Search,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0322,iOS,Organic,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0323,Android,Referral,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0324,Web,Paid Search,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0325,iOS,Organic,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0326,Android,Referral,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0327,Web,Paid Search,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0328,iOS,Organic,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0329,Android,Referral,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0330,Web,Paid Search,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0331,iOS,Organic,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0332,Android,Referral,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0333,Web,Paid Search,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0334,iOS,Organic,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0335,Android,Referral,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0336,Web,Paid Search,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0337,iOS,Organic,Young Professional,Control,1,1,0,0,0,0,0,0,0.00
+C0338,Android,Referral,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0339,Web,Paid Search,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0340,iOS,Organic,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0341,Android,Referral,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0342,Web,Paid Search,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0343,iOS,Organic,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0344,Android,Referral,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0345,Web,Paid Search,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0346,iOS,Organic,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0347,Android,Referral,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0348,Web,Paid Search,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0349,iOS,Organic,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0350,Android,Referral,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0351,Web,Paid Search,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0352,iOS,Organic,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0353,Android,Referral,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0354,Web,Paid Search,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0355,iOS,Organic,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0356,Android,Referral,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0357,Web,Paid Search,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0358,iOS,Organic,Small Business,Treatment,1,1,0,0,0,0,0,0,0.00
+C0359,Android,Referral,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0360,Web,Paid Search,Student,Treatment,1,1,0,0,0,0,0,0,0.00
+C0361,iOS,Organic,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0362,Android,Referral,Small Business,Treatment,1,0,0,0,0,0,0,0,0.00
+C0363,Web,Paid Search,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0364,iOS,Organic,Student,Treatment,1,0,0,0,0,0,0,0,0.00
+C0365,Android,Referral,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0366,Web,Paid Search,Small Business,Treatment,1,0,0,0,0,0,0,0,0.00
+C0367,iOS,Organic,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0368,Android,Referral,Student,Treatment,1,0,0,0,0,0,0,0,0.00
+C0369,Web,Paid Search,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0370,iOS,Organic,Small Business,Treatment,1,0,0,0,0,0,0,0,0.00
+C0371,Android,Referral,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0372,Web,Paid Search,Student,Treatment,1,0,0,0,0,0,0,0,0.00
+C0373,iOS,Organic,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0374,Android,Referral,Small Business,Treatment,1,0,0,0,0,0,0,0,0.00
+C0375,Web,Paid Search,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0376,iOS,Organic,Student,Treatment,1,0,0,0,0,0,0,0,0.00
+C0377,Android,Referral,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0378,Web,Paid Search,Small Business,Treatment,1,0,0,0,0,0,0,0,0.00
+C0379,iOS,Organic,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0380,Android,Referral,Student,Treatment,1,0,0,0,0,0,0,0,0.00
+C0381,Web,Paid Search,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0382,iOS,Organic,Small Business,Treatment,1,0,0,0,0,0,0,0,0.00
+C0383,Android,Referral,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0384,Web,Paid Search,Student,Treatment,1,0,0,0,0,0,0,0,0.00
+C0385,iOS,Organic,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0386,Android,Referral,Small Business,Treatment,1,0,0,0,0,0,0,0,0.00
+C0387,Web,Paid Search,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0388,iOS,Organic,Student,Treatment,1,0,0,0,0,0,0,0,0.00
+C0389,Android,Referral,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0390,Web,Paid Search,Small Business,Treatment,1,0,0,0,0,0,0,0,0.00
+C0391,iOS,Organic,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0392,Android,Referral,Student,Treatment,1,0,0,0,0,0,0,0,0.00
+C0393,Web,Paid Search,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0394,iOS,Organic,Small Business,Treatment,1,0,0,0,0,0,0,0,0.00
+C0395,Android,Referral,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0396,Web,Paid Search,Student,Treatment,1,0,0,0,0,0,0,0,0.00
+C0397,iOS,Organic,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0398,Android,Referral,Small Business,Treatment,1,0,0,0,0,0,0,0,0.00
+C0399,Web,Paid Search,Family,Control,1,0,0,0,0,0,0,0,0.00
+C0400,iOS,Organic,Student,Treatment,1,0,0,0,0,0,0,0,0.00

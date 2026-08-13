@@ -52,7 +52,7 @@ flowchart LR
 
 - The LLM cannot execute arbitrary code, write SQL, invent fields, or calculate metrics.
 - The MVP supports KPI definition, funnel, three segmentation dimensions, engagement/spend, retention/inactivity signals, and A/B testing within four documented credit-card use cases.
-- The experiment engine uses a two-sided two-proportion z-test and an unpooled 95% CI.
+- The experiment engine uses a two-sided unpooled two-proportion z-test and a matching 95% Wald CI.
 - The experiment engine checks sample-ratio mismatch against a prespecified 50/50 allocation and flags p-values below 0.01.
 - Segment analysis is descriptive. Experiment interpretation assumes random assignment.
 - No real customer data is bundled; the app demo and `sample_data/` fixtures are synthetic.

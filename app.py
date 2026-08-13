@@ -273,6 +273,10 @@ if question:
                     category_title = category.replace("_", " ").title()
                     if category == "group":
                         group_order = ["Control", "Treatment"]
+                        upper_bound = min(
+                            1.08,
+                            max(0.7, float(table["rate"].max()) + 0.08),
+                        )
                         base = alt.Chart(table).encode(
                             y=alt.Y(
                                 "group:N",
@@ -282,8 +286,8 @@ if question:
                             ),
                             x=alt.X(
                                 "rate:Q",
-                                scale=alt.Scale(domain=[0, 0.7]),
-                                axis=alt.Axis(format="%"),
+                                scale=alt.Scale(domain=[0, upper_bound]),
+                                axis=alt.Axis(format="%", grid=True, tickCount=8),
                                 title="Activation rate",
                             ),
                         )

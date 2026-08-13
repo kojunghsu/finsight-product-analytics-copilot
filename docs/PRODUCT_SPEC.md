@@ -85,6 +85,7 @@ Only Ready modules may run their complete analysis. FinSight must explain missin
 - State relevant assumptions and limitations.
 - Recommend one bounded next step using only available fields.
 - Never authorize a full rollout when experiment-integrity checks are incomplete.
+- When either experiment group has fewer than 100 customers, label the result exploratory and recommend more observations or a power/MDE review before segmentation.
 
 ### User interface
 

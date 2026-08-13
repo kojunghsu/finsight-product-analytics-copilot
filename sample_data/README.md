@@ -6,7 +6,7 @@ Upload one CSV at a time. The files are synthetic and contain no real customer r
 
 | File | Purpose | Expected Ready module |
 |---|---|---|
-| `00_all_use_cases_alias_mapping.csv` | Full lifecycle plus schema-mapping review | All four lifecycle modules and A/B Experiment Evaluation |
+| `00_all_use_cases_alias_mapping.csv` | Full lifecycle plus schema-mapping review; 400 customers with a balanced 200/200 A/B split | All four lifecycle modules and A/B Experiment Evaluation |
 | `01_acquisition_onboarding.csv` | Application and onboarding funnel | Acquisition & Onboarding |
 | `02_activation_early_use.csv` | Card activation through early engagement | Activation & Early Use |
 | `03_engagement_spend.csv` | Usage frequency and spend | Engagement & Spend |

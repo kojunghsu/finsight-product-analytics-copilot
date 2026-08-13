@@ -244,9 +244,7 @@ def _proportion_test(
     lift = p_t - p_c
     se_unpooled = math.sqrt(p_c * (1 - p_c) / control_n + p_t * (1 - p_t) / treatment_n)
     ci = (lift - 1.96 * se_unpooled, lift + 1.96 * se_unpooled)
-    pooled = (control_success + treatment_success) / (control_n + treatment_n)
-    se_pooled = math.sqrt(pooled * (1 - pooled) * (1 / control_n + 1 / treatment_n))
-    z = lift / se_pooled if se_pooled else 0.0
+    z = lift / se_unpooled if se_unpooled else 0.0
     p_value = 2 * norm.sf(abs(z))
     return {
         "control_rate": p_c,
@@ -326,8 +324,9 @@ def experiment_analysis(df: pd.DataFrame, metric: str = "activation_rate") -> An
         summary=summary,
         table=rows,
         notes=[
-            "Two-sided two-proportion z-test; 95% unpooled confidence interval.",
+            "Two-sided unpooled two-proportion z-test with a matching 95% Wald confidence interval.",
             "Random assignment and a prespecified 50/50 allocation are assumed.",
             "SRM uses a two-sided normal approximation with a conservative 1% alert threshold.",
+            "Results with fewer than 100 customers in either group should be treated as exploratory because normal approximations can be unstable.",
         ],
     )

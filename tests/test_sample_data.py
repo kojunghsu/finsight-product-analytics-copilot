@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from finsight.analytics import experiment_analysis
 from finsight.schema import suggest_mapping
 from finsight.use_cases import KNOWN_FIELDS, assess_compatibility, experiment_compatibility
 
@@ -38,6 +39,18 @@ def test_all_use_cases_alias_sample_maps_to_every_module():
     df = normalize_approved_aliases(pd.read_csv(SAMPLE_DIR / "00_all_use_cases_alias_mapping.csv"))
     assert all(item["status"] == "Ready" for item in assess_compatibility(df))
     assert experiment_compatibility(df)["status"] == "Ready"
+
+
+def test_all_use_cases_sample_has_balanced_and_coherent_experiment():
+    df = normalize_approved_aliases(pd.read_csv(SAMPLE_DIR / "00_all_use_cases_alias_mapping.csv"))
+    result = experiment_analysis(df)
+    groups = {row["group"]: row for row in result.table}
+    assert groups["Control"]["customers"] == 200
+    assert groups["Treatment"]["customers"] == 200
+    assert result.summary["srm_detected"] is False
+    assert result.summary["absolute_lift"] == pytest.approx(0.10)
+    assert result.summary["significant"] is True
+    assert result.summary["ci_95_low"] > 0
 
 
 def test_incompatible_sample_stays_unavailable_and_has_no_false_transaction_mapping():

@@ -50,7 +50,7 @@ python3 -m pytest
 python3 -m ruff check .
 ```
 
-Expected automated result at the time of submission: **17 tests passed**.
+Expected automated result at the time of submission: **18 tests passed**.
 
 ## Scope boundaries to state clearly
 
