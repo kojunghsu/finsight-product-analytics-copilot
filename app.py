@@ -81,13 +81,21 @@ st.markdown(
     .fs-mark {
         display: grid;
         place-items: center;
-        width: 43px;
-        height: 43px;
-        border-radius: 13px;
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
         background: linear-gradient(145deg, #20D6C7, #00A6A6);
         color: #062437;
-        font-weight: 800;
-        letter-spacing: -.04em;
+        box-shadow: 0 6px 16px rgba(0,166,166,.24);
+    }
+    .fs-mark svg {
+        width: 21px;
+        height: 21px;
+        stroke: #062437;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
     }
     .fs-title { color: #FFFFFF; font-size: 38px; font-weight: 760; letter-spacing: -.04em; }
     .fs-subtitle { color: #C9DFE7; font-size: 16px; margin-top: 13px; max-width: 780px; }
@@ -146,7 +154,15 @@ st.markdown(
     </style>
     <div class="fs-hero">
       <div class="fs-brand-row">
-        <div class="fs-mark">FS</div>
+        <div class="fs-mark" aria-label="FinSight analytics icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 19V13"></path>
+            <path d="M10 19V9"></path>
+            <path d="M16 19V5"></path>
+            <path d="M3 8.5L8 5l4 2 7-4"></path>
+            <path d="M16 3h3v3"></path>
+          </svg>
+        </div>
         <div class="fs-title">FinSight</div>
       </div>
       <div class="fs-subtitle">Governed product analytics for the credit-card customer lifecycle—turning business questions into reviewable evidence.</div>
