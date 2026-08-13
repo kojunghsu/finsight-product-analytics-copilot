@@ -189,7 +189,7 @@ examples = [
     "Where are customers dropping off?",
     "Which device has the lowest activation?",
     "How are customers using and spending on the card?",
-    "What are our 30-day and 90-day retention rates?",
+    "How do 30-day and 90-day activity compare?",
     "Did the redesigned onboarding flow improve activation?",
 ]
 question = st.chat_input("Ask a product analytics question")

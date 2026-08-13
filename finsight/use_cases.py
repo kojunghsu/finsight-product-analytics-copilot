@@ -52,7 +52,7 @@ USE_CASES = (
     UseCaseSpec(
         key="retention_inactivity",
         name="Retention & Inactivity",
-        business_question="Are activated cardholders retained at 30 and 90 days?",
+        business_question="How do 30-day activity, 90-day activity, and reactivation compare?",
         required_fields=(
             "customer_id",
             "card_activated",

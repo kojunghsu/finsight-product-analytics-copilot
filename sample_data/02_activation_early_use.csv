@@ -1,0 +1,14 @@
+customer_id,device,customer_segment,card_activated,first_transaction,active_30d
+E001,iOS,Young Professional,1,1,1
+E002,Android,Student,1,1,0
+E003,Web,Family,1,1,1
+E004,Android,Family,1,0,0
+E005,iOS,Student,1,1,1
+E006,Web,Young Professional,1,1,1
+E007,Android,Student,1,0,0
+E008,iOS,Family,1,1,1
+E009,Web,Young Professional,1,1,0
+E010,Android,Family,1,1,1
+E011,iOS,Student,1,1,1
+E012,Web,Young Professional,1,0,0
+

@@ -197,22 +197,22 @@ def retention_analysis(df: pd.DataFrame) -> AnalysisResult:
         raise ValueError("Retention analysis requires at least one activated cardholder.")
     rows = [
         {
-            "metric": "retention_rate_30d",
-            "definition": "Activated cardholders active within 30 days",
+            "metric": "active_rate_30d",
+            "definition": "Activated cardholders active in the 30-day measurement window",
             "value": float(eligible["active_30d"].mean()),
             "format": "percent",
         },
         {
-            "metric": "retention_rate_90d",
-            "definition": "Activated cardholders active within 90 days",
+            "metric": "active_rate_90d",
+            "definition": "Activated cardholders active in the 90-day measurement window",
             "value": float(eligible["active_90d"].mean()),
             "format": "percent",
         },
     ]
     summary = {
         "activated_customers": len(eligible),
-        "retention_rate_30d": float(eligible["active_30d"].mean()),
-        "retention_rate_90d": float(eligible["active_90d"].mean()),
+        "active_rate_30d": float(eligible["active_30d"].mean()),
+        "active_rate_90d": float(eligible["active_90d"].mean()),
     }
     if "reactivated_90d" in eligible.columns:
         reactivation = float(eligible["reactivated_90d"].mean())
@@ -227,10 +227,13 @@ def retention_analysis(df: pd.DataFrame) -> AnalysisResult:
         )
     return AnalysisResult(
         analysis_type=AnalysisType.RETENTION,
-        title="Retention & inactivity KPIs",
+        title="Retention & inactivity signals",
         summary=summary,
         table=rows,
-        notes=["Retention uses activated cardholders as the denominator."],
+        notes=[
+            "Activity rates use activated cardholders as the denominator.",
+            "The 30-day and 90-day fields are separate activity windows, not a survival curve; reactivation can make the later rate higher.",
+        ],
     )
 
 

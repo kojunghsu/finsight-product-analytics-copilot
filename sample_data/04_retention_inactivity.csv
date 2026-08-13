@@ -1,0 +1,14 @@
+customer_id,customer_segment,card_activated,active_30d,active_90d,reactivated_90d
+R001,Young Professional,1,1,1,0
+R002,Student,1,1,1,0
+R003,Family,1,0,1,1
+R004,Family,1,1,0,0
+R005,Student,1,0,0,0
+R006,Young Professional,1,1,1,0
+R007,Student,1,0,1,1
+R008,Family,1,1,1,0
+R009,Young Professional,1,0,0,0
+R010,Family,1,1,1,0
+R011,Student,1,1,0,0
+R012,Young Professional,1,0,1,1
+

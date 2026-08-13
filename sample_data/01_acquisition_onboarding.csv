@@ -1,0 +1,14 @@
+customer_id,device,acquisition_channel,customer_segment,signed_up,identity_verified,card_activated
+A001,iOS,Organic,Young Professional,1,1,1
+A002,Android,Paid Search,Student,1,1,0
+A003,Web,Referral,Family,1,1,1
+A004,Android,Organic,Family,1,0,0
+A005,iOS,Paid Search,Student,1,1,1
+A006,Web,Organic,Young Professional,1,1,1
+A007,Android,Referral,Student,1,0,0
+A008,iOS,Organic,Family,1,1,1
+A009,Web,Paid Search,Young Professional,1,1,0
+A010,Android,Referral,Family,1,1,1
+A011,iOS,Organic,Student,1,1,1
+A012,Web,Paid Search,Young Professional,1,0,0
+

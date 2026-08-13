@@ -1,0 +1,14 @@
+customer_id,device,customer_segment,active_30d,transactions_30d,spend_30d
+G001,iOS,Young Professional,1,6,142.50
+G002,Android,Student,1,5,118.25
+G003,Web,Family,0,0,0.00
+G004,Android,Family,1,8,210.75
+G005,iOS,Student,0,0,0.00
+G006,Web,Young Professional,1,7,184.30
+G007,Android,Student,0,0,0.00
+G008,iOS,Family,1,9,245.60
+G009,Web,Young Professional,0,0,0.00
+G010,Android,Family,1,2,55.20
+G011,iOS,Student,1,4,96.40
+G012,Web,Young Professional,1,10,278.90
+

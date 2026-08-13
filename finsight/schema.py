@@ -1,5 +1,4 @@
 import re
-from difflib import SequenceMatcher
 
 ALIASES = {
     "customer_id": ["user_id", "client_id", "account_id"],
@@ -7,8 +6,8 @@ ALIASES = {
     "identity_verified": ["kyc_completed", "verified", "identity_check_completed"],
     "card_activated": ["card_activation", "activated", "account_opened"],
     "first_transaction": ["first_purchase", "first_payment", "first_txn"],
-    "active_30d": ["engaged_30d", "retained_30d", "active_after_30_days"],
-    "active_90d": ["engaged_90d", "retained_90d", "active_after_90_days"],
+    "active_30d": ["engaged_30d", "active_at_30_days", "active_after_30_days"],
+    "active_90d": ["engaged_90d", "active_at_90_days", "active_after_90_days"],
     "reactivated_90d": ["reactivated", "winback_90d", "resumed_usage_90d"],
     "device": ["device_type", "platform"],
     "acquisition_channel": ["channel", "acquisition_source", "marketing_source"],
@@ -24,17 +23,11 @@ def normalize_column(name: str) -> str:
 
 
 def suggest_mapping(target: str, uploaded_columns: list[str]) -> str | None:
-    """Return a conservative initial suggestion; a user must always confirm it."""
+    """Return only an explicitly allowlisted alias; a user must always confirm it."""
     candidates = [target, *ALIASES.get(target, [])]
     normalized = {column: normalize_column(column) for column in uploaded_columns}
     for candidate in candidates:
         for column, value in normalized.items():
             if value == candidate:
                 return column
-
-    scored = [
-        (max(SequenceMatcher(None, value, candidate).ratio() for candidate in candidates), column)
-        for column, value in normalized.items()
-    ]
-    score, column = max(scored, default=(0.0, None))
-    return column if score >= 0.82 else None
+    return None

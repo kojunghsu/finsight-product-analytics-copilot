@@ -16,6 +16,7 @@ FinSight is a detailed business application and local prototype, not an LLM tech
 | System and data-flow architecture | `docs/ARCHITECTURE.md` |
 | Setup and usage instructions | `README.md` |
 | Automated validation | `tests/` |
+| Synthetic upload test pack | `sample_data/` |
 
 ## Local setup
 
@@ -37,7 +38,8 @@ Add an OpenAI API key to the local `.env` file to enable LLM planning and interp
 4. Ask which device or acquisition channel has the lowest activation.
 5. Ask whether the redesigned onboarding flow improved activation.
 6. Expand the audit trail to show that the LLM plan and Python result are separate.
-7. Upload a differently named CSV, review the schema mappings, and show the mapping metadata in the audit trail.
+7. Upload `sample_data/00_all_use_cases_alias_mapping.csv`, review the approved alias mappings, and show the mapping metadata in the audit trail.
+8. If time allows, upload `sample_data/05_incompatible_transactions.csv` to demonstrate safe refusal without false mappings.
 
 The narrative is **Measure → Diagnose → Experiment → Decide**.
 
@@ -48,7 +50,7 @@ python3 -m pytest
 python3 -m ruff check .
 ```
 
-Expected automated result at the time of submission: **11 tests passed**.
+Expected automated result at the time of submission: **17 tests passed**.
 
 ## Scope boundaries to state clearly
 
@@ -64,9 +66,9 @@ Expected automated result at the time of submission: **11 tests passed**.
 
 - `.env`
 - `.venv/`
-- uploaded CSVs under `data/`
+- locally generated or user-uploaded CSVs under `data/`
 - `__pycache__/`
 - `.pytest_cache/`
 - `.ruff_cache/`
 
-These paths are excluded by `.gitignore`. The repository contains `.env.example` only, with no API key.
+These paths are excluded by `.gitignore`. The synthetic fixtures under `sample_data/` are intentional assignment assets and should be submitted. The repository contains `.env.example` only, with no API key.

@@ -1,0 +1,14 @@
+transaction_id,account_number,merchant_name,transaction_amount,transaction_date
+T001,A1001,Cafe,12.50,2026-07-01
+T002,A1002,Grocery,46.20,2026-07-02
+T003,A1003,Transit,8.75,2026-07-03
+T004,A1001,Online Store,82.10,2026-07-04
+T005,A1004,Restaurant,35.60,2026-07-05
+T006,A1002,Pharmacy,21.90,2026-07-06
+T007,A1003,Fuel,54.30,2026-07-07
+T008,A1001,Cafe,9.80,2026-07-08
+T009,A1004,Grocery,63.40,2026-07-09
+T010,A1002,Transit,11.25,2026-07-10
+T011,A1003,Restaurant,44.70,2026-07-11
+T012,A1004,Online Store,97.15,2026-07-12
+

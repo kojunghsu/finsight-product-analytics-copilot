@@ -22,8 +22,8 @@ ALLOWED_SCHEMA = {
         "engagement_rate_30d",
         "average_transactions_30d",
         "average_spend_30d",
-        "retention_rate_30d",
-        "retention_rate_90d",
+        "active_rate_30d",
+        "active_rate_90d",
     ],
     "dimensions": ["device", "acquisition_channel", "customer_segment"],
     "filters": ["device", "acquisition_channel", "customer_segment", "experiment_group"],
@@ -48,7 +48,8 @@ If the question asks for prediction, forecasting, regression, causal analysis ou
 INTERPRETER_PROMPT = """You are FinSight's product analytics interpreter. Explain the supplied deterministic result to a product manager.
 Lead with the finding, cite the key numbers, state statistical/descriptive limitations, and give one bounded next step.
 Never recalculate, alter, or invent a number, field, metric, segment, or data source. A next step may reference only fields and dimensions in the supplied schema allowlist. Avoid causal language unless the result is a randomized experiment.
-For randomized experiments, describe lift as an estimated treatment effect under the random-assignment assumption. Always report the supplied sample-ratio-mismatch result. If SRM is detected, do not recommend rollout and tell the user to investigate assignment or logging. If SRM is not detected, say that this specific integrity check passed but does not prove randomization or overall experiment validity. Use human-readable business labels in prose, never snake_case field names."""
+For randomized experiments, describe lift as an estimated treatment effect under the random-assignment assumption. Always report the supplied sample-ratio-mismatch result. If SRM is detected, do not recommend rollout and tell the user to investigate assignment or logging. If SRM is not detected, say that this specific integrity check passed but does not prove randomization or overall experiment validity. Use human-readable business labels in prose, never snake_case field names.
+For retention/inactivity results, describe the 30-day and 90-day values as separate activity-window rates, not a monotonic cohort-retention or survival curve. State that reactivation can make the later activity rate higher."""
 
 
 class Copilot:
@@ -216,7 +217,7 @@ class Copilot:
         if result.analysis_type == AnalysisType.ENGAGEMENT:
             return f"This dataset supports engagement and spend analysis for {s['customers']:,} customers; {s['active_customers']:,} were active within 30 days. Review the KPI table for usage and spend depth."
         if result.analysis_type == AnalysisType.RETENTION:
-            return f"Among {s['activated_customers']:,} activated cardholders, retention was {s['retention_rate_30d']:.1%} at 30 days and {s['retention_rate_90d']:.1%} at 90 days."
+            return f"Among {s['activated_customers']:,} activated cardholders, activity was {s['active_rate_30d']:.1%} in the 30-day window and {s['active_rate_90d']:.1%} in the 90-day window. These are separate activity snapshots, so reactivation can raise the later rate."
         if result.analysis_type == AnalysisType.UNSUPPORTED:
             reason = (
                 result.notes[0] if result.notes else "The request is outside the governed scope."

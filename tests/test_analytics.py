@@ -63,7 +63,8 @@ def test_engagement_and_retention_modules_run_on_synthetic_data(data):
     engagement = engagement_analysis(data)
     retention = retention_analysis(data)
     assert engagement.summary["active_customers"] > 0
-    assert retention.summary["retention_rate_30d"] > retention.summary["retention_rate_90d"]
+    assert 0 <= retention.summary["active_rate_30d"] <= 1
+    assert 0 <= retention.summary["active_rate_90d"] <= 1
 
 
 def test_schema_mapping_suggests_known_aliases_only():
@@ -72,6 +73,7 @@ def test_schema_mapping_suggests_known_aliases_only():
     assert suggest_mapping("identity_verified", columns) == "kyc_completed"
     assert suggest_mapping("first_transaction", columns) == "first_purchase"
     assert suggest_mapping("spend_30d", columns) is None
+    assert suggest_mapping("transactions_30d", ["transaction_id"]) is None
 
 
 def test_mapping_metadata_is_auditable_without_row_data():

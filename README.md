@@ -13,7 +13,7 @@ This is a local prototype for the **LLM Business Application** assignment track�
 3. “Which device has the lowest activation?”
 4. “Did the redesigned onboarding flow improve activation?”
 5. “How are customers using and spending on the card?”
-6. “What are our 30-day and 90-day retention rates?”
+6. “How do 30-day and 90-day activity compare?”
 
 The synthetic generator intentionally embeds testable patterns: Android and Paid Search start with lower conversion, the treatment improves activation, Android benefits more from the redesign, and 30-day engagement is retained as a guardrail.
 
@@ -93,7 +93,7 @@ Example:
 | `first_purchase` | `first_transaction` |
 | `engaged_30d` | `active_30d` |
 
-Current mapping suggestions use conservative alias rules and string similarity, not unrestricted LLM guessing. Confirmation means that the user accepts the business-semantic equivalence; FinSight validates structure but cannot independently prove that two events have the same business definition.
+Mapping suggestions use an explicit allowlist of exact normalized aliases—not fuzzy string similarity or unrestricted LLM guessing. For example, `transaction_id` is never treated as the customer-level count `transactions_30d`. Confirmation means the user accepts the business-semantic equivalence; FinSight validates structure but cannot independently prove that two events have the same business definition.
 
 The audit trail records non-sensitive provenance metadata: source type, file name, file size, row count, confirmed source-to-target mappings, review status, and confirmation time. It does not include uploaded row-level customer data.
 
@@ -103,11 +103,17 @@ The audit trail records non-sensitive provenance metadata: source type, file nam
 - `finsight/copilot.py` — bounded LLM planning, routing, and interpretation
 - `finsight/analytics.py` — deterministic calculations and statistics
 - `finsight/synthetic.py` — reproducible synthetic banking data
+- `finsight/use_cases.py` — use-case data contracts and deterministic compatibility checks
+- `sample_data/` — six synthetic upload fixtures covering every use case, full compatibility, and rejection
 - `docs/ARCHITECTURE.md` — system contract, boundaries, and production hardening
 - `docs/BUSINESS_PLAN.md` — users, value proposition, landscape, pricing, GTM, risks, roadmap
 - `docs/PRODUCT_SPEC.md` — workflows, requirements, error states, non-goals, acceptance criteria
 - `docs/SUBMISSION_GUIDE.md` — deliverables, demo sequence, validation, and submission safety
 - `tests/` — analytical ground-truth and routing tests
+
+## Upload test pack
+
+The repository includes one synthetic CSV for each lifecycle use case, one fully compatible alias-mapping CSV, and one deliberately incompatible transaction-level CSV. See [`sample_data/README.md`](sample_data/README.md) for expected statuses and questions. These fixtures are safe to submit because they are fabricated and contain no real customer records.
 
 ## Scope and limitations
 

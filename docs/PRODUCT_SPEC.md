@@ -65,7 +65,7 @@ The metadata must not contain API keys or uploaded row-level records. Mapping is
 - Segmentation: compare activation across device, acquisition channel, or customer segment.
 - Experiment: calculate group rates, absolute and relative lift, 95% confidence interval, two-sided p-value, a 30-day engagement guardrail, and sample-ratio mismatch (SRM).
 - Engagement & Spend: calculate 30-day active rate, transaction frequency, and average spend.
-- Retention & Inactivity: calculate 30-day and 90-day retention among activated cardholders and reactivation when available.
+- Retention & Inactivity: calculate separate 30-day and 90-day activity-window rates among activated cardholders, plus reactivation when available. These are not presented as a monotonic survival-retention curve.
 
 ### Dataset compatibility
 
@@ -103,6 +103,7 @@ Only Ready modules may run their complete analysis. FinSight must explain missin
 | Empty or unreadable CSV | Explain the file error and stop analysis |
 | Partially compatible CSV | Show module-level status and allow supported analyses to continue |
 | Different column names | Require a human-reviewed schema mapping before analysis |
+| Similar but unapproved column name | Do not suggest a mapping; leave it unmapped for human review |
 | Empty filter result | Explain that no rows match |
 | Missing Control or Treatment | Explain that both groups are required |
 | Unsupported metric or dimension | Reject it with the allowed values |
@@ -122,6 +123,8 @@ Only Ready modules may run their complete analysis. FinSight must explain missin
 - All deterministic unit tests pass.
 - Lifecycle demo questions route correctly.
 - A partial dataset enables only use cases whose minimum contracts are satisfied.
+- Every CSV in `sample_data/` produces its documented compatibility status.
+- `transaction_id` is never mapped to `transactions_30d`.
 - Synthetic ground-truth patterns are recovered.
 - A valid uploaded CSV changes KPI and analysis results.
 - An invalid CSV produces a friendly contract error.
@@ -135,5 +138,6 @@ Only Ready modules may run their complete analysis. FinSight must explain missin
 - SRM assumes a prespecified 50/50 allocation and uses a 1% alert threshold.
 - Segment effects are not yet calculated inside the experiment workflow.
 - Event-order validity is assumed by the synthetic generator.
+- The 30-day and 90-day activity fields are independent measurement windows; reactivation can make the later activity rate higher.
 - The current UI keeps one displayed response rather than persistent conversation history.
 - Market, pricing, and value hypotheses have not been validated with customers.

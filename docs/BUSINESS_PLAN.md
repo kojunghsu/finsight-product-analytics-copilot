@@ -54,9 +54,9 @@ The LLM is not allowed to calculate metrics, execute arbitrary code, invent fiel
 
 ### Human-reviewed schema mapping
 
-Different banks may describe equivalent lifecycle events with different names—for example, `kyc_completed` instead of `identity_verified`. FinSight can propose conservative alias matches, but it does not silently reinterpret an event. The user reviews source-to-target mappings before a deterministic compatibility engine enables only the use cases supported by the normalized dataset.
+Different banks may describe equivalent lifecycle events with different names—for example, `kyc_completed` instead of `identity_verified`. FinSight proposes mappings only from an explicit approved alias list; it does not use fuzzy similarity or silently reinterpret an event. The user reviews source-to-target mappings before a deterministic compatibility engine enables only the use cases supported by the normalized dataset.
 
-This reduces setup friction without pretending that column-name similarity proves business equivalence. Confirmed mappings and file-level provenance appear in the audit trail, preserving accountability for the analytical definition.
+This reduces setup friction without pretending that a similar-looking name proves business equivalence. Confirmed mappings and file-level provenance appear in the audit trail, preserving accountability for the analytical definition.
 
 ## Product design
 

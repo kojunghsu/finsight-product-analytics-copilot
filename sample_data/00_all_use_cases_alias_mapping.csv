@@ -1,0 +1,17 @@
+user_id,platform,marketing_source,user_segment,variant,application_started,kyc_completed,account_opened,first_purchase,engaged_30d,active_at_90_days,resumed_usage_90d,purchases_30d,spend_30_days
+C0001,iOS,Organic,Young Professional,Control,1,1,1,1,1,1,0,6,142.50
+C0002,Android,Paid Search,Student,Treatment,1,1,1,1,1,1,0,5,118.25
+C0003,Web,Referral,Family,Control,1,1,1,1,0,1,1,3,74.00
+C0004,Android,Organic,Family,Treatment,1,1,1,1,1,1,0,8,210.75
+C0005,iOS,Paid Search,Student,Control,1,1,1,0,0,0,0,0,0.00
+C0006,Web,Organic,Young Professional,Treatment,1,1,1,1,1,1,0,7,184.30
+C0007,Android,Referral,Student,Control,1,1,0,0,0,0,0,0,0.00
+C0008,iOS,Organic,Family,Treatment,1,1,1,1,1,1,0,9,245.60
+C0009,Web,Paid Search,Young Professional,Control,1,0,0,0,0,0,0,0,0.00
+C0010,Android,Referral,Family,Treatment,1,1,1,1,0,1,1,2,55.20
+C0011,iOS,Organic,Student,Control,1,1,1,1,1,1,0,4,96.40
+C0012,Web,Paid Search,Young Professional,Treatment,1,1,1,1,1,1,0,10,278.90
+C0013,Android,Organic,Family,Control,1,1,0,0,0,0,0,0,0.00
+C0014,iOS,Referral,Student,Treatment,1,1,1,1,1,1,0,6,135.10
+C0015,Web,Organic,Young Professional,Control,1,1,1,1,0,0,0,1,24.50
+C0016,Android,Paid Search,Family,Treatment,1,1,1,1,1,1,0,7,166.80

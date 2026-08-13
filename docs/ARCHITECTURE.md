@@ -35,10 +35,14 @@ flowchart LR
     P --> K["KPI engine"]
     P --> F["Funnel engine"]
     P --> G["Segmentation engine"]
+    P --> U1["Engagement and spend engine"]
+    P --> U2["Retention and inactivity engine"]
     P --> E["Experiment engine"]
     K --> R["Validated result"]
     F --> R
     G --> R
+    U1 --> R
+    U2 --> R
     E --> R
     R --> I["LLM interpreter"]
     I --> U["Streamlit answer and audit trail"]
@@ -47,12 +51,13 @@ flowchart LR
 ## Boundaries
 
 - The LLM cannot execute arbitrary code, write SQL, invent fields, or calculate metrics.
-- The MVP supports only KPI definition, funnel, three segmentation dimensions, and A/B testing.
+- The MVP supports KPI definition, funnel, three segmentation dimensions, engagement/spend, retention/inactivity signals, and A/B testing within four documented credit-card use cases.
 - The experiment engine uses a two-sided two-proportion z-test and an unpooled 95% CI.
 - The experiment engine checks sample-ratio mismatch against a prespecified 50/50 allocation and flags p-values below 0.01.
 - Segment analysis is descriptive. Experiment interpretation assumes random assignment.
-- No customer data is bundled; all demo records are synthetic.
+- No real customer data is bundled; the app demo and `sample_data/` fixtures are synthetic.
 - Uploaded mappings are session-scoped and require explicit user confirmation.
+- Mapping suggestions come only from an approved exact alias allowlist. Fuzzy similarity is deliberately excluded to prevent semantic errors such as mapping `transaction_id` to `transactions_30d`.
 
 ## Production hardening
 
