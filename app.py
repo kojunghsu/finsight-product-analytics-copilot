@@ -222,4 +222,11 @@ if question:
         st.error(f"Analysis could not run: {exc}")
 
 st.divider()
-st.caption("Synthetic data only. FinSight supports decision preparation—not autonomous product, legal, compliance, or rollout decisions.")
+data_source_note = (
+    "Uploaded CSV active."
+    if uploaded
+    else "Synthetic data active; no real customer records are included in the demo."
+)
+st.caption(
+    f"{data_source_note} FinSight supports decision preparation—not autonomous product, legal, compliance, or rollout decisions."
+)
