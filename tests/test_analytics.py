@@ -34,6 +34,10 @@ def test_treatment_improves_activation(data):
     assert result.summary["absolute_lift"] > 0.025
     assert result.summary["p_value"] < 0.05
     assert result.summary["srm_detected"] is False
+    assert result.summary["decision_status"] == "Candidate for phased rollout"
+    assert result.summary["approximate_mde_80"] > 0
+    assert result.summary["data_quality_status"] == "Passed required experiment checks"
+    assert result.summary["segment_diagnostics"]
 
 
 def test_sample_ratio_mismatch_flags_large_allocation_error():
@@ -48,6 +52,20 @@ def test_missing_columns_fail_clearly(data):
     )
     with pytest.raises(ValueError, match="Missing required columns"):
         experiment_analysis(incomplete)
+
+
+def test_duplicate_experiment_customers_are_rejected(data):
+    duplicated = data.iloc[:500].copy()
+    duplicated.loc[duplicated.index[1], "customer_id"] = duplicated.iloc[0]["customer_id"]
+    with pytest.raises(ValueError, match="duplicate customer IDs"):
+        experiment_analysis(duplicated)
+
+
+def test_nonbinary_experiment_outcomes_are_rejected(data):
+    invalid = data.iloc[:500].copy()
+    invalid.loc[invalid.index[0], "card_activated"] = 2
+    with pytest.raises(ValueError, match="complete binary 0/1 values"):
+        experiment_analysis(invalid)
 
 
 def test_partial_dataset_enables_only_compatible_use_cases(data):

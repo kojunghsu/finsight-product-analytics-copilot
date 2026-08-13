@@ -24,7 +24,7 @@ The synthetic generator intentionally embeds testable patterns: Android and Paid
 - Deterministic KPI, funnel, segmentation, and experiment engines
 - Deterministic dataset-compatibility routing across four credit-card use cases
 - Engagement/spend and retention/inactivity KPI modules
-- Two-proportion A/B test with lift, confidence interval, p-value, guardrail, and SRM check
+- Governed A/B workflow with experiment data-quality checks, lift, confidence interval, p-value, guardrail, SRM, approximate Power/MDE context, deterministic decision gates, and directional segment consistency
 - Streamlit chat UI with upload, charts, and an auditable plan/result trace
 - Offline deterministic demo mode when no API key is present
 - Tests plus architecture and productization documentation

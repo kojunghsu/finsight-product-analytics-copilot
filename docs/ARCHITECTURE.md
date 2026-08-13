@@ -54,6 +54,8 @@ flowchart LR
 - The MVP supports KPI definition, funnel, three segmentation dimensions, engagement/spend, retention/inactivity signals, and A/B testing within four documented credit-card use cases.
 - The experiment engine uses a two-sided unpooled two-proportion z-test and a matching 95% Wald CI.
 - The experiment engine checks sample-ratio mismatch against a prespecified 50/50 allocation and flags p-values below 0.01.
+- Experiment validation requires unique customer IDs, complete binary outcomes, and exactly Control/Treatment group values.
+- The experiment engine adds an approximate 80%-power MDE, a deterministic rollout decision gate, and descriptive consistency checks across available product dimensions.
 - Segment analysis is descriptive. Experiment interpretation assumes random assignment.
 - No real customer data is bundled; the app demo and `sample_data/` fixtures are synthetic.
 - Uploaded mappings are session-scoped and require explicit user confirmation.
@@ -61,4 +63,4 @@ flowchart LR
 
 ## Production hardening
 
-Add authentication, warehouse connectors, semantic-layer governance, sample-ratio-mismatch checks, power/MDE planning, multiple-testing correction, event-order validation, PII controls, evaluation datasets, prompt/version tracing, and human approval gates.
+Add authentication, warehouse connectors, semantic-layer governance, prospective power planning, configurable allocation ratios, multiple-testing correction, event-order and exposure-window validation, PII controls, evaluation datasets, prompt/version tracing, and human approval gates.

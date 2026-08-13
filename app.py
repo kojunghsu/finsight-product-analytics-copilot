@@ -250,6 +250,30 @@ if question:
                 )
                 st.dataframe(display_table, width="stretch", hide_index=True)
                 if result.analysis_type.value == "experiment":
+                    decision_status = result.summary["decision_status"]
+                    if decision_status == "Candidate for phased rollout":
+                        st.success(f"Decision gate: {decision_status}")
+                    elif decision_status.startswith(("Do not roll out", "Investigate")):
+                        st.error(f"Decision gate: {decision_status}")
+                    else:
+                        st.warning(f"Decision gate: {decision_status}")
+                    decision_columns = st.columns(4)
+                    decision_columns[0].metric(
+                        "Absolute lift", f"{result.summary['absolute_lift']:.1%}"
+                    )
+                    decision_columns[1].metric(
+                        "95% confidence interval",
+                        f"{result.summary['ci_95_low']:.1%} to {result.summary['ci_95_high']:.1%}",
+                    )
+                    decision_columns[2].metric("p-value", f"{result.summary['p_value']:.3g}")
+                    decision_columns[3].metric(
+                        "Approx. MDE (80% power)",
+                        f"{result.summary['approximate_mde_80']:.1%}",
+                    )
+                    st.caption(
+                        "Decision gates support analyst review; they do not authorize rollout. "
+                        "MDE is an approximate planning diagnostic at 5% significance and 80% power."
+                    )
                     srm_status = (
                         "Potential sample-ratio mismatch"
                         if result.summary["srm_detected"]
@@ -266,6 +290,34 @@ if question:
                         )
                     else:
                         st.success(f"{srm_status} at the 1% threshold. {srm_delta}")
+                    segment_rows = result.summary.get("segment_diagnostics", [])
+                    if segment_rows:
+                        with st.expander("Directional consistency by available segments"):
+                            st.caption(
+                                "These breakdowns help detect inconsistent directions. They are descriptive, "
+                                "not multiplicity-adjusted hypothesis tests."
+                            )
+                            segment_table = pd.DataFrame(segment_rows).rename(
+                                columns={
+                                    "dimension": "Dimension",
+                                    "segment": "Segment",
+                                    "control_customers": "Control customers",
+                                    "treatment_customers": "Treatment customers",
+                                    "control_rate": "Control rate",
+                                    "treatment_rate": "Treatment rate",
+                                    "absolute_lift": "Absolute lift",
+                                    "sample_note": "Interpretation",
+                                }
+                            )
+                            for rate_column in [
+                                "Control rate",
+                                "Treatment rate",
+                                "Absolute lift",
+                            ]:
+                                segment_table[rate_column] = segment_table[rate_column].map(
+                                    lambda value: f"{value:.1%}"
+                                )
+                            st.dataframe(segment_table, width="stretch", hide_index=True)
                 if "rate" in table.columns:
                     category = next(
                         c for c in table.columns if c not in {"rate", "customers", "conversions"}

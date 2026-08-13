@@ -51,6 +51,9 @@ def test_all_use_cases_sample_has_balanced_and_coherent_experiment():
     assert result.summary["absolute_lift"] == pytest.approx(0.10)
     assert result.summary["significant"] is True
     assert result.summary["ci_95_low"] > 0
+    assert result.summary["decision_status"] == "Candidate for phased rollout"
+    assert result.summary["approximate_mde_80"] > 0
+    assert len(result.summary["segment_diagnostics"]) == 10
 
 
 def test_incompatible_sample_stays_unavailable_and_has_no_false_transaction_mapping():

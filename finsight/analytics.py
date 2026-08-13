@@ -278,15 +278,82 @@ def _sample_ratio_mismatch(
     }
 
 
+def _approximate_mde_80(
+    baseline_rate: float, control_n: int, treatment_n: int, alpha: float = 0.05
+) -> float:
+    """Approximate two-sided MDE at 80% power for a difference in proportions."""
+    z_alpha = norm.ppf(1 - alpha / 2)
+    z_power = norm.ppf(0.80)
+    standard_error = math.sqrt(
+        baseline_rate * (1 - baseline_rate) * (1 / control_n + 1 / treatment_n)
+    )
+    return float((z_alpha + z_power) * standard_error)
+
+
+def _validate_experiment_data(df: pd.DataFrame, outcome: str) -> pd.Series:
+    required = {"customer_id", "experiment_group", outcome, "active_30d"}
+    validate_columns(df, required)
+    if df["customer_id"].isna().any():
+        raise ValueError("Experiment customer IDs cannot be missing.")
+    duplicated = int(df["customer_id"].duplicated().sum())
+    if duplicated:
+        raise ValueError(
+            f"Experiment requires one row per customer; found {duplicated} duplicate customer IDs."
+        )
+    for column in [outcome, "active_30d"]:
+        if df[column].isna().any() or not set(df[column].unique()).issubset({0, 1}):
+            raise ValueError(f"{column} must contain only complete binary 0/1 values.")
+    groups = df["experiment_group"].astype(str).str.strip().str.casefold()
+    unexpected = sorted(set(groups) - {"control", "treatment"})
+    if unexpected:
+        raise ValueError(
+            f"Experiment group values must be Control or Treatment; found: {', '.join(unexpected)}."
+        )
+    if set(groups) != {"control", "treatment"}:
+        raise ValueError("Experiment requires both Control and Treatment groups.")
+    return groups
+
+
+def _segment_experiment_diagnostics(
+    df: pd.DataFrame, groups: pd.Series, outcome: str
+) -> list[dict]:
+    diagnostics = []
+    for dimension in ["device", "acquisition_channel", "customer_segment"]:
+        if dimension not in df.columns:
+            continue
+        for segment, segment_df in df.assign(_group=groups).groupby(dimension, observed=True):
+            control = segment_df[segment_df["_group"] == "control"]
+            treatment = segment_df[segment_df["_group"] == "treatment"]
+            if control.empty or treatment.empty:
+                continue
+            control_rate = float(control[outcome].mean())
+            treatment_rate = float(treatment[outcome].mean())
+            diagnostics.append(
+                {
+                    "dimension": dimension,
+                    "segment": str(segment),
+                    "control_customers": len(control),
+                    "treatment_customers": len(treatment),
+                    "control_rate": control_rate,
+                    "treatment_rate": treatment_rate,
+                    "absolute_lift": treatment_rate - control_rate,
+                    "sample_note": (
+                        "Directional only: fewer than 50 customers in at least one cell"
+                        if min(len(control), len(treatment)) < 50
+                        else "Directional consistency check"
+                    ),
+                }
+            )
+    return diagnostics
+
+
 def experiment_analysis(df: pd.DataFrame, metric: str = "activation_rate") -> AnalysisResult:
     if metric not in METRICS:
         raise ValueError(f"Unsupported experiment metric: {metric}")
     outcome = METRICS[metric][0]
-    validate_columns(df, {"customer_id", "experiment_group", outcome, "active_30d"})
-    control = df[df["experiment_group"] == "Control"]
-    treatment = df[df["experiment_group"] == "Treatment"]
-    if control.empty or treatment.empty:
-        raise ValueError("Experiment requires both Control and Treatment groups.")
+    groups = _validate_experiment_data(df, outcome)
+    control = df[groups == "control"]
+    treatment = df[groups == "treatment"]
     stats = _proportion_test(
         int(control[outcome].sum()), len(control), int(treatment[outcome].sum()), len(treatment)
     )
@@ -297,6 +364,20 @@ def experiment_analysis(df: pd.DataFrame, metric: str = "activation_rate") -> An
         len(treatment),
     )
     srm = _sample_ratio_mismatch(len(control), len(treatment))
+    smallest_group_n = min(len(control), len(treatment))
+    approximate_mde = _approximate_mde_80(stats["control_rate"], len(control), len(treatment))
+    segment_diagnostics = _segment_experiment_diagnostics(df, groups, outcome)
+    guardrail_significant = bool(guardrail["p_value"] < 0.05)
+    if srm["srm_detected"]:
+        decision_status = "Investigate experiment integrity"
+    elif smallest_group_n < 100:
+        decision_status = "Collect more data or review power"
+    elif not stats["significant"] or stats["ci_95_low"] <= 0:
+        decision_status = "Needs more evidence"
+    elif guardrail_significant and guardrail["absolute_lift"] < 0:
+        decision_status = "Do not roll out: guardrail declined"
+    else:
+        decision_status = "Candidate for phased rollout"
     rows = [
         {
             "group": "Control",
@@ -317,6 +398,12 @@ def experiment_analysis(df: pd.DataFrame, metric: str = "activation_rate") -> An
         "metric": metric,
         "guardrail_30d_lift": guardrail["absolute_lift"],
         "guardrail_30d_p_value": guardrail["p_value"],
+        "guardrail_30d_significant": guardrail_significant,
+        "smallest_group_n": smallest_group_n,
+        "approximate_mde_80": approximate_mde,
+        "decision_status": decision_status,
+        "data_quality_status": "Passed required experiment checks",
+        "segment_diagnostics": segment_diagnostics,
     }
     return AnalysisResult(
         analysis_type=AnalysisType.EXPERIMENT,
@@ -328,5 +415,7 @@ def experiment_analysis(df: pd.DataFrame, metric: str = "activation_rate") -> An
             "Random assignment and a prespecified 50/50 allocation are assumed.",
             "SRM uses a two-sided normal approximation with a conservative 1% alert threshold.",
             "Results with fewer than 100 customers in either group should be treated as exploratory because normal approximations can be unstable.",
+            "Approximate MDE assumes a two-sided 5% significance level and 80% power; use formal power planning before launch.",
+            "Segment diagnostics are descriptive consistency checks without multiplicity-adjusted significance tests.",
         ],
     )

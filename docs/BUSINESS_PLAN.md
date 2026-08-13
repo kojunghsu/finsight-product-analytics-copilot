@@ -85,7 +85,7 @@ KPI, funnel, segmentation, and A/B evaluation are governed analytical capabiliti
 | KPI definition | What should we measure? | Definitions and current values | Map business objective to primary/supporting metrics |
 | Funnel analysis | Where are customers dropping off? | Stage counts, conversion, drop-off | Route the question and explain the largest loss |
 | Segmentation | Which channel has the lowest activation? | Counts and rates for one approved dimension | Select the dimension and communicate descriptive limits |
-| A/B experiment | Did the redesign improve activation? | Group rates, lift, CI, p-value, guardrail | Explain estimated effect and bounded rollout conditions |
+| A/B experiment | Did the redesign improve activation? | Data-quality gates, group rates, lift, CI, p-value, SRM, guardrail, approximate MDE, directional segment consistency | Explain estimated effect and bounded phased-rollout conditions |
 
 Detailed requirements, error states, non-goals, and acceptance criteria are documented in [PRODUCT_SPEC.md](PRODUCT_SPEC.md).
 

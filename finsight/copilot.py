@@ -50,6 +50,7 @@ Lead with the finding, cite the key numbers, state statistical/descriptive limit
 Never recalculate, alter, or invent a number, field, metric, segment, or data source. A next step may reference only fields and dimensions in the supplied schema allowlist. Avoid causal language unless the result is a randomized experiment.
 For randomized experiments, describe lift as an estimated treatment effect under the random-assignment assumption. Always report the supplied sample-ratio-mismatch result. If SRM is detected, do not recommend rollout and tell the user to investigate assignment or logging. If SRM is not detected, say that this specific integrity check passed but does not prove randomization or overall experiment validity. Use human-readable business labels in prose, never snake_case field names.
 If either experiment group has fewer than 100 customers, explicitly call the result exploratory and recommend collecting more observations or reviewing power and minimum detectable effect. Do not recommend segmenting a small experiment because that would reduce sample sizes further.
+For experiments, follow the supplied deterministic decision status and report the approximate 80%-power MDE as a planning diagnostic, not a guarantee. Treat supplied segment diagnostics as directional consistency checks only: do not attach statistical significance, causal heterogeneity, or subgroup rollout claims to them. Never replace the decision status with a stronger rollout recommendation.
 For retention/inactivity results, describe the 30-day and 90-day values as separate activity-window rates, not a monotonic cohort-retention or survival curve. State that reactivation can make the later activity rate higher."""
 
 
@@ -216,7 +217,7 @@ class Copilot:
                 if smallest_group < 100
                 else ""
             )
-            return f"Treatment changed activation by {s['absolute_lift']:.1%} ({verdict}, p={s['p_value']:.3g}). The 30-day engagement guardrail changed by {s['guardrail_30d_lift']:.1%}. The allocation check found {srm} (p={s['srm_p_value']:.3g}).{sample_guidance}"
+            return f"Treatment changed activation by {s['absolute_lift']:.1%} ({verdict}, p={s['p_value']:.3g}). The approximate 80%-power MDE is {s['approximate_mde_80']:.1%}. The 30-day engagement guardrail changed by {s['guardrail_30d_lift']:.1%}. The allocation check found {srm} (p={s['srm_p_value']:.3g}). Decision gate: {s['decision_status']}.{sample_guidance}"
         if result.analysis_type == AnalysisType.FUNNEL:
             return f"The largest loss occurs before {s['largest_drop_off_before']}: {s['lost_customers']:,} customers. Segment this step by device and acquisition channel next."
         if result.analysis_type == AnalysisType.SEGMENT:

@@ -63,7 +63,7 @@ The metadata must not contain API keys or uploaded row-level records. Mapping is
 - KPI: define and calculate onboarding metrics.
 - Funnel: calculate stage counts, overall conversion, step conversion, and drop-off.
 - Segmentation: compare activation across device, acquisition channel, or customer segment.
-- Experiment: calculate group rates, absolute and relative lift, 95% confidence interval, two-sided p-value, a 30-day engagement guardrail, and sample-ratio mismatch (SRM).
+- Experiment: validate one row per customer and complete binary outcomes; calculate group rates, absolute and relative lift, 95% confidence interval, two-sided p-value, a 30-day engagement guardrail, sample-ratio mismatch (SRM), approximate 80%-power MDE, and directional segment consistency.
 - Engagement & Spend: calculate 30-day active rate, transaction frequency, and average spend.
 - Retention & Inactivity: calculate separate 30-day and 90-day activity-window rates among activated cardholders, plus reactivation when available. These are not presented as a monotonic survival-retention curve.
 
@@ -86,6 +86,8 @@ Only Ready modules may run their complete analysis. FinSight must explain missin
 - Recommend one bounded next step using only available fields.
 - Never authorize a full rollout when experiment-integrity checks are incomplete.
 - When either experiment group has fewer than 100 customers, label the result exploratory and recommend more observations or a power/MDE review before segmentation.
+- Follow the deterministic experiment decision gate: investigate integrity, collect more data, gather more evidence, stop for a harmful guardrail, or consider only a phased rollout.
+- Describe device, acquisition-channel, and customer-segment experiment breakdowns as directional consistency checks without unadjusted subgroup significance claims.
 
 ### User interface
 
@@ -94,6 +96,17 @@ Only Ready modules may run their complete analysis. FinSight must explain missin
 - Show business-readable tables and charts.
 - Expose the plan and deterministic result in an audit trail.
 - Label offline demo mode separately from OpenAI LLM mode.
+
+### Product analyst decision workflow
+
+For experiment questions, the interface must help an analyst answer these questions in order:
+
+1. **Can I trust the input enough to analyze it?** Confirm a unique customer-level randomization unit, complete binary outcomes, recognized experiment groups, and the expected allocation check.
+2. **How large is the observed effect?** Show Control and Treatment rates, absolute lift, relative lift, and a 95% confidence interval.
+3. **How uncertain is it?** Show the two-sided p-value, group sizes, small-sample warning, and approximate 80%-power MDE.
+4. **Did another important outcome deteriorate?** Show the 30-day activity guardrail separately from the primary activation outcome.
+5. **Is the direction broadly consistent?** Show descriptive Control-versus-Treatment breakdowns for available device, acquisition-channel, and customer-segment fields without subgroup significance claims.
+6. **What decision is supported?** Produce one deterministic status—investigate integrity, collect more data, gather more evidence, stop for guardrail harm, or consider a phased rollout—while retaining human approval.
 
 ## Error and boundary states
 
@@ -107,6 +120,9 @@ Only Ready modules may run their complete analysis. FinSight must explain missin
 | Similar but unapproved column name | Do not suggest a mapping; leave it unmapped for human review |
 | Empty filter result | Explain that no rows match |
 | Missing Control or Treatment | Explain that both groups are required |
+| Duplicate experiment customer IDs | Stop and explain that the randomization unit requires one row per customer |
+| Missing or nonbinary experiment outcome | Stop and require complete 0/1 outcome fields |
+| Unexpected experiment group value | Stop and require Control or Treatment |
 | Unsupported metric or dimension | Reject it with the allowed values |
 | Unsupported business question | Explain the supported lifecycle use cases; do not force an unrelated analysis |
 | OpenAI API error | Show a concise failure without exposing the API key |
@@ -135,9 +151,9 @@ Only Ready modules may run their complete analysis. FinSight must explain missin
 
 ## Known limitations
 
-- Power/MDE is not yet calculated.
+- MDE is an approximate planning diagnostic at 5% significance and 80% power, not a replacement for prospective power analysis.
 - SRM assumes a prespecified 50/50 allocation and uses a 1% alert threshold.
-- Segment effects are not yet calculated inside the experiment workflow.
+- Segment consistency is descriptive; subgroup significance, multiplicity correction, and heterogeneous-treatment-effect modeling are not included.
 - Event-order validity is assumed by the synthetic generator.
 - The 30-day and 90-day activity fields are independent measurement windows; reactivation can make the later activity rate higher.
 - The current UI keeps one displayed response rather than persistent conversation history.
