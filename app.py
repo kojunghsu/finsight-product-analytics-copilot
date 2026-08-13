@@ -67,18 +67,18 @@ st.markdown(
         fill: #007F83 !important;
         stroke: #007F83 !important;
     }
-    [data-testid="stSidebar"] button {
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button {
         background: linear-gradient(135deg, #00B8B0, #008F91);
         color: #FFFFFF !important;
         border: 1px solid rgba(255,255,255,.18);
         box-shadow: 0 6px 16px rgba(0,0,0,.18);
         font-weight: 700;
     }
-    [data-testid="stSidebar"] button * {
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button * {
         color: #FFFFFF !important;
         fill: #FFFFFF !important;
     }
-    [data-testid="stSidebar"] button:hover {
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button:hover {
         background: linear-gradient(135deg, #13C9BE, #00A6A6);
         border-color: rgba(255,255,255,.34);
     }
