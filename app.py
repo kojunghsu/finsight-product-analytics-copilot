@@ -44,9 +44,19 @@ st.markdown(
         border-radius: 14px;
     }
     [data-testid="stSidebar"] button {
-        background: #FFFFFF;
-        color: var(--fs-navy) !important;
-        border: 0;
+        background: linear-gradient(135deg, #00B8B0, #008F91);
+        color: #FFFFFF !important;
+        border: 1px solid rgba(255,255,255,.18);
+        box-shadow: 0 6px 16px rgba(0,0,0,.18);
+        font-weight: 700;
+    }
+    [data-testid="stSidebar"] button * {
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
+    }
+    [data-testid="stSidebar"] button:hover {
+        background: linear-gradient(135deg, #13C9BE, #00A6A6);
+        border-color: rgba(255,255,255,.34);
     }
     .fs-hero {
         position: relative;
