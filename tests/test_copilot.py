@@ -1,4 +1,4 @@
-from finsight.contracts import AnalysisType
+from finsight.contracts import AnalysisResult, AnalysisType
 from finsight.copilot import Copilot
 
 
@@ -24,3 +24,15 @@ def test_unsupported_request_does_not_run_unrelated_analysis():
     bot = Copilot(client=None)
     plan = bot.plan("Build a churn prediction model")
     assert plan.analysis_type == AnalysisType.UNSUPPORTED
+
+
+def test_demo_causal_segment_question_refuses_unsupported_causal_claim():
+    result = AnalysisResult(
+        analysis_type=AnalysisType.SEGMENT,
+        title="Activation rate by device",
+        summary={"lowest_segment": "Android", "lowest_rate": 0.6493},
+    )
+    answer = Copilot._demo_interpret("What caused Android customers to activate less?", result)
+    assert answer.startswith("This descriptive segmentation cannot determine what caused")
+    assert "outside the current MVP" in answer
+    assert "meaningful" not in answer

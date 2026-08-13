@@ -48,6 +48,7 @@ If the question asks for prediction, forecasting, regression, causal analysis ou
 INTERPRETER_PROMPT = """You are FinSight's product analytics interpreter. Explain the supplied deterministic result to a product manager.
 Lead with the finding, cite the key numbers, state statistical/descriptive limitations, and give one bounded next step.
 Never recalculate, alter, or invent a number, field, metric, segment, or data source. A next step may reference only fields and dimensions in the supplied schema allowlist. Avoid causal language unless the result is a randomized experiment.
+When the user's question asks what caused, drove, or explains a descriptive segment difference, lead by saying that the supplied analysis cannot determine the cause. You may then report the observed descriptive rates. Do not call a difference statistically significant, insignificant, meaningful, or immaterial unless the supplied result contains the corresponding test or threshold. State that cross-filtered, multivariate, or causal driver analysis is outside the current MVP; if you mention one as a useful future diagnostic, label it explicitly as not executable in the current MVP.
 For randomized experiments, describe lift as an estimated treatment effect under the random-assignment assumption. Always report the supplied sample-ratio-mismatch result. If SRM is detected, do not recommend rollout and tell the user to investigate assignment or logging. If SRM is not detected, say that this specific integrity check passed but does not prove randomization or overall experiment validity. Use human-readable business labels in prose, never snake_case field names.
 If either experiment group has fewer than 100 customers, explicitly call the result exploratory and recommend collecting more observations or reviewing power and minimum detectable effect. Do not recommend segmenting a small experiment because that would reduce sample sizes further.
 For experiments, follow the supplied deterministic decision status and report the approximate 80%-power MDE as a planning diagnostic, not a guarantee. Treat supplied segment diagnostics as directional consistency checks only: do not attach statistical significance, causal heterogeneity, or subgroup rollout claims to them. Never replace the decision status with a stronger rollout recommendation.
@@ -125,7 +126,7 @@ class Copilot:
 
     def interpret(self, question: str, plan: AnalysisPlan, result: AnalysisResult) -> str:
         if not self.client:
-            return self._demo_interpret(result)
+            return self._demo_interpret(question, result)
         response = self.client.responses.create(
             model=self.model,
             instructions=INTERPRETER_PROMPT,
@@ -200,7 +201,7 @@ class Copilot:
         )
 
     @staticmethod
-    def _demo_interpret(result: AnalysisResult) -> str:
+    def _demo_interpret(question: str, result: AnalysisResult) -> str:
         s = result.summary
         if result.analysis_type == AnalysisType.EXPERIMENT:
             verdict = (
@@ -230,6 +231,12 @@ class Copilot:
         if result.analysis_type == AnalysisType.FUNNEL:
             return f"The largest loss occurs before {s['largest_drop_off_before']}: {s['lost_customers']:,} customers. Segment this step by device and acquisition channel next."
         if result.analysis_type == AnalysisType.SEGMENT:
+            causal_question = any(
+                phrase in question.casefold()
+                for phrase in ["cause", "caused", "why", "driver", "drove", "explain"]
+            )
+            if causal_question:
+                return f"This descriptive segmentation cannot determine what caused the difference. {s['lowest_segment']} had the lowest observed rate at {s['lowest_rate']:.1%}, but no statistical, practical-significance, cross-filtered, or causal driver test was supplied. A cross-filtered driver diagnostic could be useful, but it is outside the current MVP."
             return f"{s['lowest_segment']} has the lowest observed rate at {s['lowest_rate']:.1%}. This is descriptive; investigate mix and journey differences before attributing a cause."
         if result.analysis_type == AnalysisType.ENGAGEMENT:
             return f"This dataset supports engagement and spend analysis for {s['customers']:,} customers; {s['active_customers']:,} were active within 30 days. Review the KPI table for usage and spend depth."

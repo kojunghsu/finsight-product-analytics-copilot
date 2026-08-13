@@ -88,6 +88,7 @@ Only Ready modules may run their complete analysis. FinSight must explain missin
 - When either experiment group has fewer than 100 customers, label the result exploratory and recommend more observations or a power/MDE review before segmentation.
 - Follow the deterministic experiment decision gate: investigate integrity, collect more data, gather more evidence, stop for a harmful guardrail, or consider only a phased rollout.
 - Describe device, acquisition-channel, and customer-segment experiment breakdowns as directional consistency checks without unadjusted subgroup significance claims.
+- For descriptive questions using causal language such as “what caused” or “why,” lead with the causal limitation, avoid unsupported significance or meaningfulness language, and label cross-filtered or causal driver analysis as outside the current MVP.
 
 ### User interface
 
