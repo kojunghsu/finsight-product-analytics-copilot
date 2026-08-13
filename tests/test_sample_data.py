@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 
 from finsight.analytics import experiment_analysis
-from finsight.schema import suggest_mapping
+from finsight.schema import suggest_mapping, suggested_mappings
 from finsight.use_cases import KNOWN_FIELDS, assess_compatibility, experiment_compatibility
 
 SAMPLE_DIR = Path(__file__).parents[1] / "sample_data"
@@ -33,6 +33,17 @@ def test_each_use_case_sample_enables_its_intended_module(filename, ready_module
     df = pd.read_csv(SAMPLE_DIR / filename)
     statuses = {item["key"]: item["status"] for item in assess_compatibility(df)}
     assert statuses[ready_module] == "Ready"
+
+
+def test_canonical_use_case_samples_do_not_trigger_mapping_review():
+    for filename in [
+        "01_acquisition_onboarding.csv",
+        "02_activation_early_use.csv",
+        "03_engagement_spend.csv",
+        "04_retention_inactivity.csv",
+    ]:
+        columns = list(pd.read_csv(SAMPLE_DIR / filename, nrows=0).columns)
+        assert suggested_mappings(columns, KNOWN_FIELDS) == {}
 
 
 def test_all_use_cases_alias_sample_maps_to_every_module():

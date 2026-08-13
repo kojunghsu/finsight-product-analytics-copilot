@@ -31,3 +31,16 @@ def suggest_mapping(target: str, uploaded_columns: list[str]) -> str | None:
             if value == candidate:
                 return column
     return None
+
+
+def suggested_mappings(
+    uploaded_columns: list[str], known_fields: tuple[str, ...]
+) -> dict[str, str]:
+    """Return only useful alias suggestions for fields absent from the upload."""
+    canonical = set(known_fields)
+    candidates = [column for column in uploaded_columns if column not in canonical]
+    suggestions = {}
+    for target in sorted(canonical - set(uploaded_columns)):
+        if source := suggest_mapping(target, candidates):
+            suggestions[target] = source
+    return suggestions

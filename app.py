@@ -8,7 +8,7 @@ from openai import OpenAIError
 
 from finsight.audit import build_data_context
 from finsight.copilot import Copilot
-from finsight.schema import suggest_mapping
+from finsight.schema import suggested_mappings
 from finsight.synthetic import generate_onboarding_data
 from finsight.use_cases import KNOWN_FIELDS, assess_compatibility, experiment_compatibility
 
@@ -50,7 +50,10 @@ st.markdown(
     [data-testid="stSidebar"] [data-testid="stFileUploaderFileName"],
     [data-testid="stSidebar"] [data-testid="stFileUploaderFileName"] *,
     [data-testid="stSidebar"] [data-testid="stFileUploaderFileSize"],
-    [data-testid="stSidebar"] [data-testid="stFileUploaderFileSize"] * {
+    [data-testid="stSidebar"] [data-testid="stFileUploaderFileSize"] *,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderFile"] div,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderFile"] span,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderFile"] small {
         color: var(--fs-navy) !important;
         opacity: 1 !important;
     }
@@ -248,21 +251,22 @@ if uploaded:
     try:
         raw_df = pd.read_csv(uploaded)
         mapping_key = f"schema_mapping::{uploaded.name}::{uploaded.size}"
-        unmapped_targets = sorted(set(KNOWN_FIELDS) - set(raw_df.columns))
-        if unmapped_targets and mapping_key not in st.session_state:
+        candidate_columns = [column for column in raw_df.columns if column not in KNOWN_FIELDS]
+        suggested_targets = suggested_mappings(list(raw_df.columns), KNOWN_FIELDS)
+        needs_mapping_review = bool(candidate_columns and suggested_targets)
+        if needs_mapping_review and mapping_key not in st.session_state:
             st.warning(
                 "Review how this CSV maps to FinSight's credit-card product fields. "
                 "You may leave fields unmapped; unavailable analyses will be disabled."
             )
-            candidate_columns = [column for column in raw_df.columns if column not in KNOWN_FIELDS]
             with st.form("schema_mapping_form"):
                 st.subheader("Schema Mapping Review")
                 st.caption(
                     "Suggestions are conservative starting points. Confirm the business meaning of every event before applying them."
                 )
                 proposed = {}
-                for target in unmapped_targets:
-                    suggestion = suggest_mapping(target, candidate_columns)
+                for target in sorted(suggested_targets):
+                    suggestion = suggested_targets[target]
                     options = ["— Not mapped —", *candidate_columns]
                     index = options.index(suggestion) if suggestion in options else 0
                     proposed[target] = st.selectbox(
