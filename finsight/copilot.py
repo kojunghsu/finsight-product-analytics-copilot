@@ -4,7 +4,14 @@ from collections.abc import Callable
 
 import pandas as pd
 
-from finsight.analytics import define_kpis, experiment_analysis, funnel_analysis, segment_analysis
+from finsight.analytics import (
+    define_kpis,
+    engagement_analysis,
+    experiment_analysis,
+    funnel_analysis,
+    retention_analysis,
+    segment_analysis,
+)
 from finsight.contracts import AnalysisPlan, AnalysisResult, AnalysisType
 
 ALLOWED_SCHEMA = {
@@ -13,13 +20,27 @@ ALLOWED_SCHEMA = {
         "activation_rate",
         "first_transaction_rate",
         "engagement_rate_30d",
+        "average_transactions_30d",
+        "average_spend_30d",
+        "retention_rate_30d",
+        "retention_rate_90d",
     ],
     "dimensions": ["device", "acquisition_channel", "customer_segment"],
     "filters": ["device", "acquisition_channel", "customer_segment", "experiment_group"],
+    "lifecycle_fields": [
+        "signed_up",
+        "identity_verified",
+        "card_activated",
+        "first_transaction",
+        "active_30d",
+        "active_90d",
+        "transactions_30d",
+        "spend_30d",
+    ],
 }
 
-PLANNER_PROMPT = """You are FinSight's product-analytics planner. Translate one business question into exactly one bounded analysis plan.
-Only use KPI definition, funnel, segmentation, experiment analysis, or unsupported. Never calculate numbers. Never invent columns.
+PLANNER_PROMPT = """You are FinSight's credit-card product-analytics planner. Translate one business question into exactly one bounded analysis plan.
+Only use KPI definition, funnel, segmentation, engagement/spend, retention/inactivity, experiment analysis, or unsupported. Never calculate numbers. Never invent columns.
 Use only this allowlist: {schema}. Choose activation_rate by default. Use filters only for explicit user constraints.
 For experiment analysis, always return an empty filters list and a null dimension because the deterministic engine must compare the complete Control and Treatment groups. Do not describe treatment exposure as a filter.
 If the question asks for prediction, forecasting, regression, causal analysis outside the randomized experiment, arbitrary exploration, or any unsupported capability, return analysis_type unsupported with null dimension, empty filters, and a short rationale. Do not force it into a supported workflow."""
@@ -68,6 +89,8 @@ class Copilot:
             AnalysisType.SEGMENT: lambda: segment_analysis(
                 df, plan.metric, plan.dimension or "device"
             ),
+            AnalysisType.ENGAGEMENT: lambda: engagement_analysis(df),
+            AnalysisType.RETENTION: lambda: retention_analysis(df),
             AnalysisType.EXPERIMENT: lambda: experiment_analysis(df, plan.metric),
             AnalysisType.UNSUPPORTED: lambda: AnalysisResult(
                 analysis_type=AnalysisType.UNSUPPORTED,
@@ -77,6 +100,8 @@ class Copilot:
                         "KPI definition",
                         "funnel analysis",
                         "customer segmentation",
+                        "engagement and spend",
+                        "retention and inactivity",
                         "A/B experiment evaluation",
                     ]
                 },
@@ -85,7 +110,15 @@ class Copilot:
                 ],
             ),
         }
-        return tools[plan.analysis_type]()
+        try:
+            return tools[plan.analysis_type]()
+        except ValueError as exc:
+            return AnalysisResult(
+                analysis_type=AnalysisType.UNSUPPORTED,
+                title="Dataset not compatible with this analysis",
+                summary={"requested_workflow": plan.analysis_type.value},
+                notes=[str(exc)],
+            )
 
     def interpret(self, question: str, plan: AnalysisPlan, result: AnalysisResult) -> str:
         if not self.client:
@@ -140,6 +173,10 @@ class Copilot:
             kind = AnalysisType.EXPERIMENT
         elif any(word in q for word in ["drop", "funnel", "losing"]):
             kind = AnalysisType.FUNNEL
+        elif any(word in q for word in ["retention", "inactive", "inactivity", "90-day", "90 day"]):
+            kind = AnalysisType.RETENTION
+        elif any(word in q for word in ["spend", "transaction frequency", "usage", "engagement"]):
+            kind = AnalysisType.ENGAGEMENT
         elif any(word in q for word in ["which", "segment", "device", "channel", "lowest"]):
             kind = AnalysisType.SEGMENT
         else:
@@ -176,6 +213,14 @@ class Copilot:
             return f"The largest loss occurs before {s['largest_drop_off_before']}: {s['lost_customers']:,} customers. Segment this step by device and acquisition channel next."
         if result.analysis_type == AnalysisType.SEGMENT:
             return f"{s['lowest_segment']} has the lowest observed rate at {s['lowest_rate']:.1%}. This is descriptive; investigate mix and journey differences before attributing a cause."
+        if result.analysis_type == AnalysisType.ENGAGEMENT:
+            return f"This dataset supports engagement and spend analysis for {s['customers']:,} customers; {s['active_customers']:,} were active within 30 days. Review the KPI table for usage and spend depth."
+        if result.analysis_type == AnalysisType.RETENTION:
+            return f"Among {s['activated_customers']:,} activated cardholders, retention was {s['retention_rate_30d']:.1%} at 30 days and {s['retention_rate_90d']:.1%} at 90 days."
         if result.analysis_type == AnalysisType.UNSUPPORTED:
-            return "That request is outside FinSight's governed MVP. I can help define onboarding KPIs, analyze the onboarding funnel, compare approved customer segments, or evaluate the existing A/B experiment."
-        return f"The KPI framework covers {s['customers']:,} customers and uses activation rate as the primary onboarding outcome, supported by verification, first-transaction, and 30-day engagement metrics."
+            reason = (
+                result.notes[0] if result.notes else "The request is outside the governed scope."
+            )
+            return f"FinSight did not run this analysis: {reason} Review the dataset compatibility panel for an available credit-card use case."
+        primary = s["recommended_primary_metric"].replace("_", " ")
+        return f"The available KPI framework covers {s['customers']:,} customers. Based on the confirmed fields, the recommended primary metric is {primary}."

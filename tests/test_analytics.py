@@ -2,13 +2,16 @@ import pytest
 
 from finsight.analytics import (
     _sample_ratio_mismatch,
+    engagement_analysis,
     experiment_analysis,
     funnel_analysis,
+    retention_analysis,
     segment_analysis,
 )
 from finsight.audit import build_data_context
 from finsight.schema import suggest_mapping
 from finsight.synthetic import generate_onboarding_data
+from finsight.use_cases import assess_compatibility, experiment_compatibility
 
 
 @pytest.fixture(scope="module")
@@ -40,8 +43,27 @@ def test_sample_ratio_mismatch_flags_large_allocation_error():
 
 
 def test_missing_columns_fail_clearly(data):
+    incomplete = data.drop(
+        columns=["identity_verified", "card_activated", "first_transaction", "active_30d"]
+    )
     with pytest.raises(ValueError, match="Missing required columns"):
-        funnel_analysis(data.drop(columns=["card_activated"]))
+        experiment_analysis(incomplete)
+
+
+def test_partial_dataset_enables_only_compatible_use_cases(data):
+    partial = data[["customer_id", "card_activated", "active_30d", "transactions_30d", "spend_30d"]]
+    statuses = {item["key"]: item["status"] for item in assess_compatibility(partial)}
+    assert statuses["engagement_spend"] == "Ready"
+    assert statuses["acquisition_onboarding"] != "Ready"
+    assert statuses["retention_inactivity"] != "Ready"
+    assert experiment_compatibility(partial)["status"] == "Unavailable"
+
+
+def test_engagement_and_retention_modules_run_on_synthetic_data(data):
+    engagement = engagement_analysis(data)
+    retention = retention_analysis(data)
+    assert engagement.summary["active_customers"] > 0
+    assert retention.summary["retention_rate_30d"] > retention.summary["retention_rate_90d"]
 
 
 def test_schema_mapping_suggests_known_aliases_only():

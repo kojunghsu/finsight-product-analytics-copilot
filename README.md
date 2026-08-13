@@ -1,8 +1,8 @@
 # FinSight
 
-**LLM-powered product analytics copilot for digital-banking onboarding.**
+**LLM-powered product analytics copilot for the credit-card customer lifecycle.**
 
-FinSight turns natural-language product questions into four governed workflows: KPI definition, onboarding funnel analysis, customer segmentation, and A/B experiment evaluation. The LLM maps business intent and interprets results; deterministic Python owns every calculation and statistical test.
+FinSight inspects an uploaded customer-level dataset and determines which of four credit-card product use cases it can support: Acquisition & Onboarding, Activation & Early Use, Engagement & Spend, and Retention & Inactivity. A/B experiment evaluation is an additional cross-cutting capability. Conservative rules suggest schema mappings for human confirmation; the LLM routes business intent and interprets results; deterministic Python owns compatibility checks, calculations, and statistical tests.
 
 This is a local prototype for the **LLM Business Application** assignment track—not a generic data-science automation tool and not an autonomous decision maker.
 
@@ -12,6 +12,8 @@ This is a local prototype for the **LLM Business Application** assignment track�
 2. “Where are customers dropping off?”
 3. “Which device has the lowest activation?”
 4. “Did the redesigned onboarding flow improve activation?”
+5. “How are customers using and spending on the card?”
+6. “What are our 30-day and 90-day retention rates?”
 
 The synthetic generator intentionally embeds testable patterns: Android and Paid Search start with lower conversion, the treatment improves activation, Android benefits more from the redesign, and 30-day engagement is retained as a guardrail.
 
@@ -20,6 +22,8 @@ The synthetic generator intentionally embeds testable patterns: Android and Paid
 - Reproducible synthetic dataset generator (30,000 customers by default)
 - Schema-aware LLM planner with structured output
 - Deterministic KPI, funnel, segmentation, and experiment engines
+- Deterministic dataset-compatibility routing across four credit-card use cases
+- Engagement/spend and retention/inactivity KPI modules
 - Two-proportion A/B test with lift, confidence interval, p-value, guardrail, and SRM check
 - Streamlit chat UI with upload, charts, and an auditable plan/result trace
 - Offline deterministic demo mode when no API key is present
@@ -52,21 +56,32 @@ python3 -m ruff check .
 
 ## Data contract
 
-Uploaded CSVs must contain `customer_id`, `device`, `acquisition_channel`, `customer_segment`, `experiment_group`, `spend_30d`, and the sequential binary event columns `signed_up`, `identity_verified`, `card_activated`, `first_transaction`, and `active_30d`. The bundled demo additionally includes optional `signup_date` and `transactions_30d` fields.
+FinSight no longer requires every uploaded CSV to contain one universal schema. Each use case has its own minimum data contract:
 
-If an uploaded file uses different column names, FinSight opens a schema-mapping review. It may preselect conservative alias matches, but a user must confirm every required mapping before Python validates or analyzes the data. FinSight never silently changes KPI definitions.
+| Credit-card use case | Minimum confirmed fields |
+|---|---|
+| Acquisition & Onboarding | `customer_id`, `signed_up`, `identity_verified`, `card_activated` |
+| Activation & Early Use | `customer_id`, `card_activated`, `first_transaction`, `active_30d` |
+| Engagement & Spend | `customer_id`, `active_30d`, `transactions_30d`, `spend_30d` |
+| Retention & Inactivity | `customer_id`, `card_activated`, `active_30d`, `active_90d` |
+| A/B Experiment Evaluation | `customer_id`, `experiment_group`, `card_activated`, `active_30d` |
+
+Optional segmentation fields include `device`, `acquisition_channel`, and `customer_segment`. The compatibility panel labels every module Ready, Limited, or Unavailable and explains missing fields.
+
+If an uploaded file uses different column names, FinSight opens a schema-mapping review. It may preselect conservative alias matches, but a user confirms only the mappings that are semantically valid. Unmapped fields are allowed; they simply keep dependent modules from becoming Ready. FinSight never silently changes KPI definitions.
 
 ### Upload and schema-mapping workflow
 
 1. Click **Upload** and select an onboarding CSV.
 2. If the file already follows the FinSight data contract, validation runs immediately.
-3. If required column names differ, review every suggestion in **Schema Mapping Review**.
+3. If recognized field names differ, review the suggestions in **Schema Mapping Review**.
 4. Correct any mapping whose business meaning is not equivalent to the FinSight target field.
-5. Map every required field and ensure that each uploaded column is used only once.
-6. Click **Apply confirmed mapping**.
-7. Verify **Uploaded CSV active** and the number of confirmed mappings in the sidebar.
-8. Ask a demo or free-form product analytics question.
-9. Expand **Audit trail** to review the file metadata, confirmed mappings, analysis plan, and deterministic result.
+5. Map the fields whose business meanings are equivalent and ensure each uploaded column is used only once.
+6. Click **Apply selected mappings**.
+7. Review **Dataset compatibility** to see which product modules are Ready, Limited, or Unavailable.
+8. Verify **Uploaded CSV active** and the number of confirmed mappings in the sidebar.
+9. Ask a supported demo or free-form product analytics question.
+10. Expand **Audit trail** to review the file metadata, confirmed mappings, analysis plan, and deterministic result.
 
 Example:
 
@@ -96,7 +111,7 @@ The audit trail records non-sensitive provenance metadata: source type, file nam
 
 ## Scope and limitations
 
-FinSight does not perform predictive modeling, causal inference beyond the randomized A/B workflow, arbitrary exploratory analysis, dynamic Power BI generation, or automated rollout. The current data is synthetic, the market and pricing sections are hypotheses, and real banking use would require security, privacy, governance, compliance, and extensive evaluation.
+FinSight does not accept arbitrary banking datasets. It supports the four documented customer-level credit-card use cases and refuses analyses whose required fields are unavailable. It does not perform predictive modeling, causal inference beyond the randomized A/B workflow, arbitrary exploratory analysis, dynamic Power BI generation, or automated rollout. The current data is synthetic, the market and pricing sections are hypotheses, and real banking use would require security, privacy, governance, compliance, and extensive evaluation.
 
 ## Portfolio framing
 

@@ -21,22 +21,18 @@ METRICS = {
     "engagement_rate_30d": ("active_30d", "Signed-up customers active within 30 days"),
 }
 
-REQUIRED_COLUMNS = {column for _, column in FUNNEL_STEPS} | {
-    "customer_id",
-    "device",
-    "acquisition_channel",
-    "customer_segment",
-    "experiment_group",
-    "spend_30d",
-}
 
-
-def validate_data(df: pd.DataFrame) -> None:
-    missing = REQUIRED_COLUMNS - set(df.columns)
+def validate_columns(df: pd.DataFrame, required: set[str]) -> None:
+    missing = required - set(df.columns)
     if missing:
         raise ValueError(f"Missing required columns: {', '.join(sorted(missing))}")
     if df.empty:
         raise ValueError("The dataset is empty.")
+
+
+def validate_data(df: pd.DataFrame) -> None:
+    """Validate the complete onboarding funnel for backward compatibility."""
+    validate_columns(df, {"customer_id", *(column for _, column in FUNNEL_STEPS)})
 
 
 def apply_filters(df: pd.DataFrame, filters: dict[str, str] | None = None) -> pd.DataFrame:
@@ -51,31 +47,55 @@ def apply_filters(df: pd.DataFrame, filters: dict[str, str] | None = None) -> pd
 
 
 def define_kpis(df: pd.DataFrame) -> AnalysisResult:
-    validate_data(df)
+    validate_columns(df, {"customer_id"})
     rows = []
     for name, (column, definition) in METRICS.items():
-        rows.append({"metric": name, "definition": definition, "value": float(df[column].mean())})
-    rows.append(
-        {
-            "metric": "average_spend_30d",
-            "definition": "Average 30-day spend per signed-up customer",
-            "value": float(df["spend_30d"].mean()),
-        }
+        if column in df.columns:
+            rows.append(
+                {"metric": name, "definition": definition, "value": float(df[column].mean())}
+            )
+    if "spend_30d" in df.columns:
+        rows.append(
+            {
+                "metric": "average_spend_30d",
+                "definition": "Average 30-day spend per customer",
+                "value": float(df["spend_30d"].mean()),
+            }
+        )
+    if not rows:
+        raise ValueError("No supported KPI fields were found after schema mapping.")
+    recommended_primary = (
+        "activation_rate"
+        if "card_activated" in df.columns
+        else "engagement_rate_30d"
+        if "active_30d" in df.columns
+        else rows[0]["metric"]
     )
     return AnalysisResult(
         analysis_type=AnalysisType.KPI,
-        title="Onboarding KPI framework",
-        summary={"customers": len(df), "recommended_primary_metric": "activation_rate"},
+        title="Available credit-card KPIs",
+        summary={"customers": len(df), "recommended_primary_metric": recommended_primary},
         table=rows,
         notes=["Rates use all signed-up customers as the denominator."],
     )
 
 
 def funnel_analysis(df: pd.DataFrame, filters: dict[str, str] | None = None) -> AnalysisResult:
-    validate_data(df)
+    validate_columns(df, {"customer_id"})
+    acquisition_fields = {"signed_up", "identity_verified", "card_activated"}
+    early_use_fields = {"card_activated", "first_transaction", "active_30d"}
+    if not (acquisition_fields <= set(df.columns) or early_use_fields <= set(df.columns)):
+        raise ValueError(
+            "Funnel analysis requires either the complete acquisition stages or the complete early-use stages."
+        )
+    available_steps = [(label, column) for label, column in FUNNEL_STEPS if column in df.columns]
+    if len(available_steps) < 2:
+        raise ValueError(
+            "Funnel analysis requires at least two recognized sequential event fields."
+        )
     view = apply_filters(df, filters)
     rows, previous = [], len(view)
-    for label, column in FUNNEL_STEPS:
+    for label, column in available_steps:
         count = int(view[column].sum())
         rows.append(
             {
@@ -104,13 +124,13 @@ def funnel_analysis(df: pd.DataFrame, filters: dict[str, str] | None = None) -> 
 def segment_analysis(
     df: pd.DataFrame, metric: str = "activation_rate", dimension: str = "device"
 ) -> AnalysisResult:
-    validate_data(df)
     allowed_dimensions = {"device", "acquisition_channel", "customer_segment"}
     if dimension not in allowed_dimensions:
         raise ValueError(f"Dimension must be one of: {', '.join(sorted(allowed_dimensions))}")
     if metric not in METRICS:
         raise ValueError(f"Unsupported metric: {metric}")
     column = METRICS[metric][0]
+    validate_columns(df, {"customer_id", dimension, column})
     table = (
         df.groupby(dimension, observed=True)[column]
         .agg(customers="size", rate="mean")
@@ -127,6 +147,90 @@ def segment_analysis(
         },
         table=table,
         notes=["Segment results are descriptive and do not establish causality."],
+    )
+
+
+def engagement_analysis(df: pd.DataFrame) -> AnalysisResult:
+    required = {"customer_id", "active_30d", "transactions_30d", "spend_30d"}
+    validate_columns(df, required)
+    active = df["active_30d"].astype(bool)
+    rows = [
+        {
+            "metric": "active_rate_30d",
+            "definition": "Customers active within 30 days",
+            "value": float(active.mean()),
+            "format": "percent",
+        },
+        {
+            "metric": "average_transactions_30d",
+            "definition": "Average 30-day transactions per customer",
+            "value": float(df["transactions_30d"].mean()),
+            "format": "number",
+        },
+        {
+            "metric": "average_spend_30d",
+            "definition": "Average 30-day spend per customer",
+            "value": float(df["spend_30d"].mean()),
+            "format": "currency",
+        },
+        {
+            "metric": "average_spend_active_30d",
+            "definition": "Average 30-day spend among active customers",
+            "value": float(df.loc[active, "spend_30d"].mean()) if active.any() else 0.0,
+            "format": "currency",
+        },
+    ]
+    return AnalysisResult(
+        analysis_type=AnalysisType.ENGAGEMENT,
+        title="Engagement & spend KPIs",
+        summary={"customers": len(df), "active_customers": int(active.sum())},
+        table=rows,
+        notes=["This is a descriptive 30-day customer-level view."],
+    )
+
+
+def retention_analysis(df: pd.DataFrame) -> AnalysisResult:
+    required = {"customer_id", "card_activated", "active_30d", "active_90d"}
+    validate_columns(df, required)
+    eligible = df[df["card_activated"].astype(bool)]
+    if eligible.empty:
+        raise ValueError("Retention analysis requires at least one activated cardholder.")
+    rows = [
+        {
+            "metric": "retention_rate_30d",
+            "definition": "Activated cardholders active within 30 days",
+            "value": float(eligible["active_30d"].mean()),
+            "format": "percent",
+        },
+        {
+            "metric": "retention_rate_90d",
+            "definition": "Activated cardholders active within 90 days",
+            "value": float(eligible["active_90d"].mean()),
+            "format": "percent",
+        },
+    ]
+    summary = {
+        "activated_customers": len(eligible),
+        "retention_rate_30d": float(eligible["active_30d"].mean()),
+        "retention_rate_90d": float(eligible["active_90d"].mean()),
+    }
+    if "reactivated_90d" in eligible.columns:
+        reactivation = float(eligible["reactivated_90d"].mean())
+        summary["reactivation_rate_90d"] = reactivation
+        rows.append(
+            {
+                "metric": "reactivation_rate_90d",
+                "definition": "Activated cardholders reactivated by day 90",
+                "value": reactivation,
+                "format": "percent",
+            }
+        )
+    return AnalysisResult(
+        analysis_type=AnalysisType.RETENTION,
+        title="Retention & inactivity KPIs",
+        summary=summary,
+        table=rows,
+        notes=["Retention uses activated cardholders as the denominator."],
     )
 
 
@@ -174,10 +278,10 @@ def _sample_ratio_mismatch(
 
 
 def experiment_analysis(df: pd.DataFrame, metric: str = "activation_rate") -> AnalysisResult:
-    validate_data(df)
     if metric not in METRICS:
         raise ValueError(f"Unsupported experiment metric: {metric}")
     outcome = METRICS[metric][0]
+    validate_columns(df, {"customer_id", "experiment_group", outcome, "active_30d"})
     control = df[df["experiment_group"] == "Control"]
     treatment = df[df["experiment_group"] == "Treatment"]
     if control.empty or treatment.empty:

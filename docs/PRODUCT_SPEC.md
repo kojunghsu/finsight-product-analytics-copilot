@@ -2,7 +2,7 @@
 
 ## Product statement
 
-FinSight helps digital-banking product teams translate natural-language onboarding questions into reviewable KPI, funnel, segmentation, and A/B experiment analyses.
+FinSight helps credit-card product teams determine which lifecycle questions an uploaded customer-level dataset can answer, then translates natural-language questions into reviewable deterministic analyses.
 
 ## Design principles
 
@@ -30,7 +30,7 @@ FinSight helps digital-banking product teams translate natural-language onboardi
 - Generate 5K–50K synthetic customers with a fixed seed.
 - Accept a CSV upload and switch the active data source.
 - When column names differ, show conservative mapping suggestions and require user confirmation.
-- Validate required columns before showing KPIs or accepting questions.
+- Compare confirmed fields with each use-case contract before enabling its analysis.
 - Show a clear error without a traceback when the contract is invalid.
 - Never commit API keys or uploaded data to the repository.
 
@@ -53,7 +53,7 @@ The metadata must not contain API keys or uploaded row-level records. Mapping is
 ### LLM planner
 
 - Return structured output matching the `AnalysisPlan` contract.
-- Select only KPI, funnel, segmentation, or experiment workflows.
+- Select only KPI, funnel, segmentation, engagement/spend, retention/inactivity, or experiment workflows.
 - Use only approved metrics, dimensions, and filters.
 - For experiments, compare the complete Control and Treatment groups.
 - Do not calculate numbers or invent fields.
@@ -64,6 +64,18 @@ The metadata must not contain API keys or uploaded row-level records. Mapping is
 - Funnel: calculate stage counts, overall conversion, step conversion, and drop-off.
 - Segmentation: compare activation across device, acquisition channel, or customer segment.
 - Experiment: calculate group rates, absolute and relative lift, 95% confidence interval, two-sided p-value, a 30-day engagement guardrail, and sample-ratio mismatch (SRM).
+- Engagement & Spend: calculate 30-day active rate, transaction frequency, and average spend.
+- Retention & Inactivity: calculate 30-day and 90-day retention among activated cardholders and reactivation when available.
+
+### Dataset compatibility
+
+The UI must show four credit-card use cases—Acquisition & Onboarding, Activation & Early Use, Engagement & Spend, and Retention & Inactivity—plus the cross-cutting experiment capability. Each receives one deterministic status:
+
+- **Ready:** all required canonical fields are present after confirmed mapping.
+- **Limited:** some relevant fields are present, but at least one required field is missing.
+- **Unavailable:** the dataset does not meet the minimum contract.
+
+Only Ready modules may run their complete analysis. FinSight must explain missing fields instead of forcing an unrelated workflow.
 
 ### LLM interpreter
 
@@ -77,7 +89,7 @@ The metadata must not contain API keys or uploaded row-level records. Mapping is
 ### User interface
 
 - Display active data source and core KPIs.
-- Provide four demo questions plus free-form chat input.
+- Provide lifecycle demo questions plus free-form chat input.
 - Show business-readable tables and charts.
 - Expose the plan and deterministic result in an audit trail.
 - Label offline demo mode separately from OpenAI LLM mode.
@@ -88,12 +100,13 @@ The metadata must not contain API keys or uploaded row-level records. Mapping is
 |---|---|
 | No upload | Use reproducible synthetic data |
 | Missing API key | Run clearly labeled deterministic demo mode |
-| Invalid CSV | List missing required fields and stop analysis |
+| Empty or unreadable CSV | Explain the file error and stop analysis |
+| Partially compatible CSV | Show module-level status and allow supported analyses to continue |
 | Different column names | Require a human-reviewed schema mapping before analysis |
 | Empty filter result | Explain that no rows match |
 | Missing Control or Treatment | Explain that both groups are required |
 | Unsupported metric or dimension | Reject it with the allowed values |
-| Unsupported business question | Explain the four supported workflows; do not force an unrelated analysis |
+| Unsupported business question | Explain the supported lifecycle use cases; do not force an unrelated analysis |
 | OpenAI API error | Show a concise failure without exposing the API key |
 
 ## Non-goals
@@ -107,7 +120,8 @@ The metadata must not contain API keys or uploaded row-level records. Mapping is
 ## MVP acceptance criteria
 
 - All deterministic unit tests pass.
-- The four demo questions route correctly.
+- Lifecycle demo questions route correctly.
+- A partial dataset enables only use cases whose minimum contracts are satisfied.
 - Synthetic ground-truth patterns are recovered.
 - A valid uploaded CSV changes KPI and analysis results.
 - An invalid CSV produces a friendly contract error.

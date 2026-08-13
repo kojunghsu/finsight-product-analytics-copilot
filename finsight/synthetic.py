@@ -30,6 +30,9 @@ def generate_onboarding_data(n: int = 30_000, seed: int = 42) -> pd.DataFrame:
     activated = verified & (rng.random(n) < activation_p)
     transacted = activated & (rng.random(n) < (0.84 + 0.015 * (group == "Treatment")))
     engaged = transacted & (rng.random(n) < (0.72 + 0.01 * (segment == "Young Professional")))
+    retained_90d = engaged & (rng.random(n) < (0.78 + 0.03 * (segment == "Young Professional")))
+    reactivated_90d = transacted & ~engaged & (rng.random(n) < 0.18)
+    active_90d = retained_90d | reactivated_90d
     transactions = np.where(engaged, rng.poisson(5.2, n) + 1, 0)
     spend = np.where(engaged, rng.gamma(2.2, 58, n), 0).round(2)
 
@@ -46,6 +49,8 @@ def generate_onboarding_data(n: int = 30_000, seed: int = 42) -> pd.DataFrame:
             "card_activated": activated.astype(int),
             "first_transaction": transacted.astype(int),
             "active_30d": engaged.astype(int),
+            "active_90d": active_90d.astype(int),
+            "reactivated_90d": reactivated_90d.astype(int),
             "transactions_30d": transactions,
             "spend_30d": spend,
         }

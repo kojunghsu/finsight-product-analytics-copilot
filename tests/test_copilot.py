@@ -11,6 +11,8 @@ def test_demo_router_stays_in_scope():
         == AnalysisType.EXPERIMENT
     )
     assert bot.plan("Which device is lowest?").analysis_type == AnalysisType.SEGMENT
+    assert bot.plan("How much are customers spending?").analysis_type == AnalysisType.ENGAGEMENT
+    assert bot.plan("What is our 90-day retention?").analysis_type == AnalysisType.RETENTION
     assert bot.plan("What should we measure?").analysis_type == AnalysisType.KPI
     assert bot.plan("What should we measure?").filters == []
 

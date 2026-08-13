@@ -8,6 +8,8 @@ class AnalysisType(str, Enum):
     KPI = "kpi_definition"
     FUNNEL = "funnel"
     SEGMENT = "segmentation"
+    ENGAGEMENT = "engagement_spend"
+    RETENTION = "retention_inactivity"
     EXPERIMENT = "experiment"
     UNSUPPORTED = "unsupported"
 

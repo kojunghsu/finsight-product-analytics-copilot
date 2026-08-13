@@ -48,12 +48,12 @@ python3 -m pytest
 python3 -m ruff check .
 ```
 
-Expected automated result at the time of submission: **9 tests passed**.
+Expected automated result at the time of submission: **11 tests passed**.
 
 ## Scope boundaries to state clearly
 
 - The LLM maps business intent and explains results; Python performs all calculations.
-- The prototype supports four governed onboarding workflows.
+- The prototype evaluates four governed credit-card lifecycle use cases and enables only compatible modules.
 - Schema suggestions require human confirmation and do not prove business-semantic equivalence.
 - Segment comparisons are descriptive.
 - A/B interpretation assumes random assignment; SRM is checked against a prespecified 50/50 allocation, while power/MDE is not yet calculated.

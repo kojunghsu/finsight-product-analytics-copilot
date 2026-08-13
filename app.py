@@ -6,16 +6,16 @@ import streamlit as st
 from dotenv import load_dotenv
 from openai import OpenAIError
 
-from finsight.analytics import REQUIRED_COLUMNS, validate_data
 from finsight.audit import build_data_context
 from finsight.copilot import Copilot
 from finsight.schema import suggest_mapping
 from finsight.synthetic import generate_onboarding_data
+from finsight.use_cases import KNOWN_FIELDS, assess_compatibility, experiment_compatibility
 
 load_dotenv()
 st.set_page_config(page_title="FinSight", page_icon="📈", layout="wide")
 st.title("FinSight")
-st.caption("LLM-powered product analytics copilot for digital-banking onboarding")
+st.caption("LLM-powered product analytics copilot for the credit-card customer lifecycle")
 
 DISPLAY_NAMES = {
     "metric": "Metric",
@@ -56,21 +56,20 @@ if uploaded:
     try:
         raw_df = pd.read_csv(uploaded)
         mapping_key = f"schema_mapping::{uploaded.name}::{uploaded.size}"
-        missing = sorted(REQUIRED_COLUMNS - set(raw_df.columns))
-        if missing and mapping_key not in st.session_state:
+        unmapped_targets = sorted(set(KNOWN_FIELDS) - set(raw_df.columns))
+        if unmapped_targets and mapping_key not in st.session_state:
             st.warning(
-                "This CSV uses a different schema. Review the suggested mappings before analysis."
+                "Review how this CSV maps to FinSight's credit-card product fields. "
+                "You may leave fields unmapped; unavailable analyses will be disabled."
             )
-            candidate_columns = [
-                column for column in raw_df.columns if column not in REQUIRED_COLUMNS
-            ]
+            candidate_columns = [column for column in raw_df.columns if column not in KNOWN_FIELDS]
             with st.form("schema_mapping_form"):
                 st.subheader("Schema Mapping Review")
                 st.caption(
                     "Suggestions are conservative starting points. Confirm the business meaning of every event before applying them."
                 )
                 proposed = {}
-                for target in missing:
+                for target in unmapped_targets:
                     suggestion = suggest_mapping(target, candidate_columns)
                     options = ["— Not mapped —", *candidate_columns]
                     index = options.index(suggestion) if suggestion in options else 0
@@ -80,15 +79,13 @@ if uploaded:
                         index=index,
                         key=f"map::{mapping_key}::{target}",
                     )
-                if st.form_submit_button("Apply confirmed mapping", type="primary"):
+                if st.form_submit_button("Apply selected mappings", type="primary"):
                     selected = {
                         target: source
                         for target, source in proposed.items()
                         if source != "— Not mapped —"
                     }
-                    if len(selected) != len(missing):
-                        st.error("Map every required field before continuing.")
-                    elif len(set(selected.values())) != len(selected):
+                    if len(set(selected.values())) != len(selected):
                         st.error("Each uploaded column can map to only one FinSight field.")
                     else:
                         st.session_state[mapping_key] = {
@@ -106,7 +103,8 @@ if uploaded:
             mapping = mapping_record
             mapping_confirmed_at = None
         df = raw_df.rename(columns={source: target for target, source in mapping.items()})
-        validate_data(df)
+        if df.empty:
+            raise ValueError("The dataset is empty.")
         if "signup_date" in df.columns:
             df["signup_date"] = pd.to_datetime(df["signup_date"], errors="coerce")
         with st.sidebar:
@@ -130,11 +128,53 @@ else:
     data_context = build_data_context(source_type="synthetic", rows=len(df))
 copilot = Copilot()
 
+compatibility = assess_compatibility(df)
+experiment_status = experiment_compatibility(df)
+with st.expander("Dataset compatibility", expanded=uploaded is not None):
+    st.caption(
+        "FinSight enables only the credit-card use cases supported by confirmed fields. "
+        "A Limited or Unavailable module will not be forced into an analysis."
+    )
+    compatibility_table = pd.DataFrame(
+        [
+            {
+                "Credit-card use case": item["use_case"],
+                "Status": item["status"],
+                "Missing required fields": ", ".join(
+                    field.replace("_", " ").title() for field in item["missing_required"]
+                )
+                or "None",
+            }
+            for item in compatibility
+        ]
+        + [
+            {
+                "Credit-card use case": experiment_status["capability"],
+                "Status": experiment_status["status"],
+                "Missing required fields": ", ".join(
+                    field.replace("_", " ").title()
+                    for field in experiment_status["missing_required"]
+                )
+                or "None",
+            }
+        ]
+    )
+    st.dataframe(compatibility_table, width="stretch", hide_index=True)
+
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("Customers", f"{len(df):,}")
-c2.metric("Verified", f"{df.identity_verified.mean():.1%}")
-c3.metric("Activated", f"{df.card_activated.mean():.1%}")
-c4.metric("30-day active", f"{df.active_30d.mean():.1%}")
+c2.metric(
+    "Verified",
+    f"{df['identity_verified'].mean():.1%}" if "identity_verified" in df else "Not available",
+)
+c3.metric(
+    "Activated",
+    f"{df['card_activated'].mean():.1%}" if "card_activated" in df else "Not available",
+)
+c4.metric(
+    "30-day active",
+    f"{df['active_30d'].mean():.1%}" if "active_30d" in df else "Not available",
+)
 if copilot.client:
     st.info(
         "Mode: OpenAI LLM. The model plans and interprets; calculations remain deterministic Python."
@@ -148,6 +188,8 @@ examples = [
     "What should we measure for onboarding?",
     "Where are customers dropping off?",
     "Which device has the lowest activation?",
+    "How are customers using and spending on the card?",
+    "What are our 30-day and 90-day retention rates?",
     "Did the redesigned onboarding flow improve activation?",
 ]
 question = st.chat_input("Ask a product analytics question")
@@ -183,10 +225,23 @@ if question:
                     display_table["metric"] = (
                         display_table["metric"].str.replace("_", " ").str.title()
                     )
+                    formats = (
+                        table["format"]
+                        if "format" in table.columns
+                        else table["metric"].map(
+                            lambda metric: "currency" if "spend" in metric else "percent"
+                        )
+                    )
                     display_table["value"] = [
-                        f"${value:,.2f}" if metric == "average_spend_30d" else f"{value:.1%}"
-                        for metric, value in zip(table["metric"], table["value"], strict=True)
+                        f"${value:,.2f}"
+                        if value_format == "currency"
+                        else f"{value:,.2f}"
+                        if value_format == "number"
+                        else f"{value:.1%}"
+                        for value, value_format in zip(table["value"], formats, strict=True)
                     ]
+                    if "format" in display_table.columns:
+                        display_table = display_table.drop(columns="format")
                 display_table = display_table.rename(
                     columns={
                         column: DISPLAY_NAMES.get(column, column.replace("_", " ").title())
@@ -310,6 +365,8 @@ if question:
                 st.json(
                     {
                         "data_context": data_context,
+                        "dataset_compatibility": compatibility,
+                        "experiment_compatibility": experiment_status,
                         "plan": plan.model_dump(mode="json"),
                         "result": result.model_dump(mode="json"),
                     }

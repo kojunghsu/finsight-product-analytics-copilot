@@ -2,7 +2,7 @@
 
 ## Executive summary
 
-FinSight is an LLM-powered product analytics copilot for digital-banking onboarding teams. It translates natural-language product questions into four governed workflows—KPI definition, funnel analysis, customer segmentation, and A/B experiment evaluation—while deterministic Python owns every calculation and statistical test.
+FinSight is an LLM-powered product analytics copilot for credit-card product teams. It first determines which of four lifecycle use cases an uploaded customer-level dataset can support—Acquisition & Onboarding, Activation & Early Use, Engagement & Spend, and Retention & Inactivity—then routes natural-language questions to governed deterministic analyses. A/B experiment evaluation is available when the required experiment fields are present.
 
 The product hypothesis is that a narrow, auditable copilot can reduce the time between a product manager asking a question and an analyst reviewing a statistically grounded first-pass answer. FinSight is not positioned as a replacement for analysts or as a general-purpose data-science platform.
 
@@ -54,7 +54,7 @@ The LLM is not allowed to calculate metrics, execute arbitrary code, invent fiel
 
 ### Human-reviewed schema mapping
 
-Different banks may describe equivalent onboarding events with different names—for example, `kyc_completed` instead of `identity_verified`. FinSight can propose conservative alias matches, but it does not silently reinterpret an event. The user reviews each source-to-target mapping before Python validates the normalized dataset.
+Different banks may describe equivalent lifecycle events with different names—for example, `kyc_completed` instead of `identity_verified`. FinSight can propose conservative alias matches, but it does not silently reinterpret an event. The user reviews source-to-target mappings before a deterministic compatibility engine enables only the use cases supported by the normalized dataset.
 
 This reduces setup friction without pretending that column-name similarity proves business equivalence. Confirmed mappings and file-level provenance appear in the audit trail, preserving accountability for the analytical definition.
 
@@ -71,7 +71,14 @@ Measure → Diagnose → Experiment → Decide
 3. **Experiment:** compare Control and Treatment using deterministic statistics.
 4. **Decide:** interpret evidence, guardrails, assumptions, and human checks.
 
-### MVP workflows
+### MVP lifecycle use cases
+
+1. Acquisition & Onboarding
+2. Activation & Early Use
+3. Engagement & Spend
+4. Retention & Inactivity
+
+KPI, funnel, segmentation, and A/B evaluation are governed analytical capabilities applied only when their required fields are present.
 
 | Workflow | Example question | Deterministic output | LLM contribution |
 |---|---|---|---|
@@ -99,7 +106,7 @@ Official references: [Amplitude pricing and platform](https://amplitude.com/pric
 
 FinSight should not claim feature superiority over established platforms. Its testable differentiation is:
 
-- one high-context use case: digital-banking onboarding;
+- four bounded, related use cases across the credit-card customer lifecycle;
 - a small allowlisted workflow surface instead of open-ended analysis;
 - deterministic calculations separated from LLM reasoning;
 - an exposed plan/result audit trail;
@@ -113,7 +120,7 @@ The following figures are **illustrative hypotheses for customer interviews**, n
 
 | Tier | Illustrative price | Intended customer | Included hypothesis |
 |---|---:|---|---|
-| Free demo | $0 | Students and evaluators | Synthetic data, four workflows, limited LLM questions |
+| Free demo | $0 | Students and evaluators | Synthetic data, four lifecycle use cases, limited LLM questions |
 | Individual | $12/user/month | Individual PM or analyst | CSV upload, complete analyses, audit export |
 | Team | $99/month | One product squad, up to 10 users | Shared analyses, metric definitions, and review workflow |
 | Enterprise pilot | Custom; target $5,000–$10,000/year | Regulated financial institution testing one use case | Private pilot, onboarding support, and one governed data connection |

@@ -8,11 +8,14 @@ ALIASES = {
     "card_activated": ["card_activation", "activated", "account_opened"],
     "first_transaction": ["first_purchase", "first_payment", "first_txn"],
     "active_30d": ["engaged_30d", "retained_30d", "active_after_30_days"],
+    "active_90d": ["engaged_90d", "retained_90d", "active_after_90_days"],
+    "reactivated_90d": ["reactivated", "winback_90d", "resumed_usage_90d"],
     "device": ["device_type", "platform"],
     "acquisition_channel": ["channel", "acquisition_source", "marketing_source"],
     "customer_segment": ["segment", "user_segment", "customer_type"],
     "experiment_group": ["ab_group", "variant", "test_group"],
     "spend_30d": ["spend_30_days", "thirty_day_spend", "amount_30d"],
+    "transactions_30d": ["transaction_count_30d", "txns_30d", "purchases_30d"],
 }
 
 

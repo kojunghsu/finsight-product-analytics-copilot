@@ -10,6 +10,8 @@
 4. The interpreter explains the immutable result and its limitations.
 5. The UI exposes the plan and raw result as an audit trail.
 
+Before question routing, a deterministic compatibility engine compares confirmed canonical fields with four use-case contracts. It never infers availability from the industry label alone: a credit-card transaction file cannot silently become an onboarding funnel, and a module remains unavailable when its required business fields are missing.
+
 ### Data ingestion and schema normalization
 
 ```mermaid
