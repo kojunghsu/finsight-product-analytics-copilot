@@ -313,19 +313,46 @@ if question:
                             width="stretch",
                         )
                     else:
+                        chart_table = table.sort_values("rate").copy()
+                        category_order = chart_table[category].astype(str).tolist()
+                        lowest_rate = chart_table["rate"].min()
+                        chart_table["highlight"] = chart_table["rate"].eq(lowest_rate)
+                        upper_bound = min(1.0, max(0.7, float(chart_table["rate"].max()) + 0.08))
+                        base = alt.Chart(chart_table).encode(
+                            y=alt.Y(
+                                f"{category}:N",
+                                sort=category_order,
+                                title=None,
+                                axis=alt.Axis(labelFontSize=13, labelPadding=10),
+                            ),
+                            x=alt.X(
+                                "rate:Q",
+                                scale=alt.Scale(domain=[0, upper_bound]),
+                                axis=alt.Axis(format="%", grid=True, tickCount=8),
+                                title="Activation rate",
+                            ),
+                        )
+                        bars = base.mark_bar(cornerRadiusEnd=5, height=30).encode(
+                            color=alt.condition(
+                                "datum.highlight",
+                                alt.value("#FF4B4B"),
+                                alt.value("#94A3B8"),
+                            ),
+                            tooltip=[
+                                alt.Tooltip(f"{category}:N", title=category_title),
+                                alt.Tooltip("customers:Q", title="Customers", format=","),
+                                alt.Tooltip("rate:Q", title="Activation rate", format=".1%"),
+                            ],
+                        )
+                        labels = base.mark_text(
+                            align="left",
+                            baseline="middle",
+                            dx=8,
+                            fontSize=14,
+                            fontWeight="bold",
+                        ).encode(text=alt.Text("rate:Q", format=".1%"))
                         st.altair_chart(
-                            alt.Chart(table)
-                            .mark_bar()
-                            .encode(
-                                x=alt.X(f"{category}:N", sort="-y", title=category_title),
-                                y=alt.Y(
-                                    "rate:Q",
-                                    axis=alt.Axis(format="%"),
-                                    title="Activation rate",
-                                ),
-                                tooltip=list(table.columns),
-                            )
-                            .properties(height=300),
+                            (bars + labels).properties(height=max(150, 55 * len(chart_table))),
                             width="stretch",
                         )
                 elif "overall_conversion" in table.columns:
