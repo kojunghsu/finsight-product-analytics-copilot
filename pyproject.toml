@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "finsight-copilot"
+version = "0.1.0"
+description = "LLM-powered product analytics copilot for digital-banking onboarding"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "altair>=5.4,<6",
+  "numpy>=1.26,<3",
+  "openai>=1.66,<3",
+  "pandas>=2.2,<3",
+  "pydantic>=2.10,<3",
+  "python-dotenv>=1.0,<2",
+  "scipy>=1.13,<2",
+  "streamlit>=1.42,<2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3,<9", "ruff>=0.9,<1"]
+
+[tool.setuptools.packages.find]
+include = ["finsight*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
