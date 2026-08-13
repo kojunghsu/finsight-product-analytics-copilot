@@ -107,15 +107,17 @@ The following figures are **illustrative hypotheses for customer interviews**, n
 
 | Tier | Illustrative price | Intended customer | Included hypothesis |
 |---|---:|---|---|
-| Analyst | $29/user/month | Individual PM or analyst | CSV analysis, four workflows, saved audit exports |
-| Team | $299/month | One product squad, up to 10 users | Shared metric definitions, team history, approval workflow |
-| Enterprise | Starting at $25,000/year | Regulated financial institution | SSO, RBAC, private deployment, audit retention, support |
+| Free demo | $0 | Students and evaluators | Synthetic data, four workflows, limited LLM questions |
+| Individual | $12/user/month | Individual PM or analyst | CSV upload, complete analyses, audit export |
+| Team | $99/month | One product squad, up to 10 users | Shared analyses, metric definitions, and review workflow |
+| Enterprise pilot | Custom; target $5,000–$10,000/year | Regulated financial institution testing one use case | Private pilot, onboarding support, and one governed data connection |
 
 ### Pricing logic
 
-- A low individual price reduces trial friction but must cover model and support costs.
+- A free demo makes the prototype easy to evaluate without implying production readiness.
+- A low individual price reduces trial friction but must eventually cover model and support costs.
 - Team pricing aligns value with a product squad rather than charging for every query.
-- Enterprise pricing reflects deployment, security, governance, procurement, and support requirements.
+- The enterprise offer is framed as a limited pilot because the MVP does not yet include full SSO, RBAC, private deployment, or production support.
 - A production model would test seat-based, event-volume, and annual platform pricing against customer preferences.
 
 ## Go-to-market hypothesis
