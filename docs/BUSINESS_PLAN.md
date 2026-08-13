@@ -85,6 +85,8 @@ KPI, funnel, segmentation, and A/B evaluation are governed analytical capabiliti
 | KPI definition | What should we measure? | Definitions and current values | Map business objective to primary/supporting metrics |
 | Funnel analysis | Where are customers dropping off? | Stage counts, conversion, drop-off | Route the question and explain the largest loss |
 | Segmentation | Which channel has the lowest activation? | Counts and rates for one approved dimension | Select the dimension and communicate descriptive limits |
+| Engagement & Spend | How are customers using and spending on the card? | 30-day active rate, transaction frequency, average spend, and spend among active customers | Explain usage depth and keep the result descriptive |
+| Retention & Inactivity | How do 30-day and 90-day activity compare? | Separate activity-window rates and reactivation when available | Explain that the windows are not a monotonic survival curve |
 | A/B experiment | Did the redesign improve activation? | Data-quality gates, group rates, lift, CI, p-value, SRM, guardrail, approximate MDE, directional segment consistency | Explain estimated effect and bounded phased-rollout conditions |
 
 Detailed requirements, error states, non-goals, and acceptance criteria are documented in [PRODUCT_SPEC.md](PRODUCT_SPEC.md).
@@ -185,8 +187,8 @@ Synthetic results do not demonstrate real customer impact. A production pilot wo
 
 ## Roadmap
 
-1. **MVP:** local synthetic-data prototype with four governed workflows.
-2. **Pilot:** warehouse connection, saved analyses, evaluation harness, SRM checks, and analyst approval.
+1. **MVP:** local synthetic-data prototype spanning four credit-card lifecycle use cases, governed analytical workflows, schema mapping, SRM, approximate MDE, and analyst-facing decision gates.
+2. **Pilot:** warehouse connection, saved analyses, evaluation harness, configurable experiment-allocation ratios, exposure-window validation, and analyst approval.
 3. **Team product:** shared metric catalog, permissions, comments, and decision history.
 4. **Enterprise:** SSO, RBAC, private deployment, PII controls, monitoring, and audit retention.
 

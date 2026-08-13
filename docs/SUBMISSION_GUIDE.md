@@ -58,7 +58,7 @@ Expected automated result at the time of submission: **21 tests passed**.
 - The prototype evaluates four governed credit-card lifecycle use cases and enables only compatible modules.
 - Schema suggestions require human confirmation and do not prove business-semantic equivalence.
 - Segment comparisons are descriptive.
-- A/B interpretation assumes random assignment; SRM is checked against a prespecified 50/50 allocation, while power/MDE is not yet calculated.
+- A/B interpretation assumes random assignment; SRM is checked against a prespecified 50/50 allocation. FinSight reports an approximate 80%-power MDE as a planning diagnostic, but it does not replace prospective power analysis.
 - Pricing, market position, and business value are hypotheses, not validated commercial results.
 - FinSight prepares decisions but does not approve product, legal, compliance, or rollout actions.
 
