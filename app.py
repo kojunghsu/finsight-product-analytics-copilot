@@ -17,6 +17,23 @@ st.set_page_config(page_title="FinSight", page_icon="📈", layout="wide")
 st.title("FinSight")
 st.caption("LLM-powered product analytics copilot for digital-banking onboarding")
 
+DISPLAY_NAMES = {
+    "metric": "Metric",
+    "definition": "Definition",
+    "value": "Current value",
+    "step": "Onboarding stage",
+    "customers": "Customers",
+    "overall_conversion": "Overall conversion",
+    "step_conversion": "Step conversion",
+    "drop_off": "Customers lost",
+    "group": "Experiment group",
+    "conversions": "Activated customers",
+    "rate": "Activation rate",
+    "device": "Device",
+    "acquisition_channel": "Acquisition channel",
+    "customer_segment": "Customer segment",
+}
+
 with st.sidebar:
     st.header("Data")
     uploaded = st.file_uploader("Upload onboarding CSV", type="csv")
@@ -29,9 +46,11 @@ with st.sidebar:
     if not uploaded:
         st.caption("No uploaded data? FinSight generates a reproducible synthetic cohort.")
 
+
 @st.cache_data
 def sample_data(n: int) -> pd.DataFrame:
     return generate_onboarding_data(n=n)
+
 
 if uploaded:
     try:
@@ -117,9 +136,13 @@ c2.metric("Verified", f"{df.identity_verified.mean():.1%}")
 c3.metric("Activated", f"{df.card_activated.mean():.1%}")
 c4.metric("30-day active", f"{df.active_30d.mean():.1%}")
 if copilot.client:
-    st.info("Mode: OpenAI LLM. The model plans and interprets; calculations remain deterministic Python.")
+    st.info(
+        "Mode: OpenAI LLM. The model plans and interprets; calculations remain deterministic Python."
+    )
 else:
-    st.info("Mode: Deterministic demo. Add OPENAI_API_KEY to enable LLM planning and interpretation; calculations remain deterministic Python.")
+    st.info(
+        "Mode: Deterministic demo. Add OPENAI_API_KEY to enable LLM planning and interpretation; calculations remain deterministic Python."
+    )
 
 examples = [
     "What should we measure for onboarding?",
@@ -144,25 +167,54 @@ if question:
             st.caption(f"Analysis workflow: {route_label}")
             table = pd.DataFrame(result.table)
             if not table.empty:
+                st.subheader(result.title)
                 display_table = table.copy()
                 for column in ["rate", "overall_conversion", "step_conversion"]:
                     if column in display_table.columns:
-                        display_table[column] = display_table[column].map(lambda value: f"{value:.1%}")
+                        display_table[column] = display_table[column].map(
+                            lambda value: f"{value:.1%}"
+                        )
                 for column in ["customers", "conversions", "drop_off"]:
                     if column in display_table.columns:
-                        display_table[column] = display_table[column].map(lambda value: f"{value:,}")
+                        display_table[column] = display_table[column].map(
+                            lambda value: f"{value:,}"
+                        )
                 if {"metric", "value"}.issubset(display_table.columns):
-                    display_table["metric"] = display_table["metric"].str.replace("_", " ").str.title()
+                    display_table["metric"] = (
+                        display_table["metric"].str.replace("_", " ").str.title()
+                    )
                     display_table["value"] = [
                         f"${value:,.2f}" if metric == "average_spend_30d" else f"{value:.1%}"
                         for metric, value in zip(table["metric"], table["value"], strict=True)
                     ]
                 display_table = display_table.rename(
-                    columns={column: column.replace("_", " ").title() for column in display_table.columns}
+                    columns={
+                        column: DISPLAY_NAMES.get(column, column.replace("_", " ").title())
+                        for column in display_table.columns
+                    }
                 )
                 st.dataframe(display_table, width="stretch", hide_index=True)
+                if result.analysis_type.value == "experiment":
+                    srm_status = (
+                        "Potential sample-ratio mismatch"
+                        if result.summary["srm_detected"]
+                        else "No sample-ratio mismatch detected"
+                    )
+                    srm_delta = (
+                        f"Observed Control allocation: {result.summary['observed_control_share']:.1%} "
+                        f"(expected {result.summary['expected_control_share']:.0%}); "
+                        f"p = {result.summary['srm_p_value']:.3g}."
+                    )
+                    if result.summary["srm_detected"]:
+                        st.error(
+                            f"{srm_status}. {srm_delta} Investigate assignment or event logging before interpreting rollout readiness."
+                        )
+                    else:
+                        st.success(f"{srm_status} at the 1% threshold. {srm_delta}")
                 if "rate" in table.columns:
-                    category = next(c for c in table.columns if c not in {"rate", "customers", "conversions"})
+                    category = next(
+                        c for c in table.columns if c not in {"rate", "customers", "conversions"}
+                    )
                     category_title = category.replace("_", " ").title()
                     if category == "group":
                         group_order = ["Control", "Treatment"]

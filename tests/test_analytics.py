@@ -1,6 +1,11 @@
 import pytest
 
-from finsight.analytics import experiment_analysis, funnel_analysis, segment_analysis
+from finsight.analytics import (
+    _sample_ratio_mismatch,
+    experiment_analysis,
+    funnel_analysis,
+    segment_analysis,
+)
 from finsight.audit import build_data_context
 from finsight.schema import suggest_mapping
 from finsight.synthetic import generate_onboarding_data
@@ -25,6 +30,13 @@ def test_treatment_improves_activation(data):
     result = experiment_analysis(data)
     assert result.summary["absolute_lift"] > 0.025
     assert result.summary["p_value"] < 0.05
+    assert result.summary["srm_detected"] is False
+
+
+def test_sample_ratio_mismatch_flags_large_allocation_error():
+    result = _sample_ratio_mismatch(control_n=700, treatment_n=300)
+    assert result["srm_detected"] is True
+    assert result["srm_p_value"] < 0.01
 
 
 def test_missing_columns_fail_clearly(data):

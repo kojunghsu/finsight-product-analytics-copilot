@@ -8,7 +8,12 @@ from finsight.analytics import define_kpis, experiment_analysis, funnel_analysis
 from finsight.contracts import AnalysisPlan, AnalysisResult, AnalysisType
 
 ALLOWED_SCHEMA = {
-    "metrics": ["verification_rate", "activation_rate", "first_transaction_rate", "engagement_rate_30d"],
+    "metrics": [
+        "verification_rate",
+        "activation_rate",
+        "first_transaction_rate",
+        "engagement_rate_30d",
+    ],
     "dimensions": ["device", "acquisition_channel", "customer_segment"],
     "filters": ["device", "acquisition_channel", "customer_segment", "experiment_group"],
 }
@@ -22,7 +27,7 @@ If the question asks for prediction, forecasting, regression, causal analysis ou
 INTERPRETER_PROMPT = """You are FinSight's product analytics interpreter. Explain the supplied deterministic result to a product manager.
 Lead with the finding, cite the key numbers, state statistical/descriptive limitations, and give one bounded next step.
 Never recalculate, alter, or invent a number, field, metric, segment, or data source. A next step may reference only fields and dimensions in the supplied schema allowlist. Avoid causal language unless the result is a randomized experiment.
-For randomized experiments, describe lift as an estimated treatment effect under the random-assignment assumption. If sample-ratio mismatch was not tested, never say the change is ready for full rollout; call it a candidate for phased rollout only after integrity and operational checks. Use human-readable business labels in prose, never snake_case field names."""
+For randomized experiments, describe lift as an estimated treatment effect under the random-assignment assumption. Always report the supplied sample-ratio-mismatch result. If SRM is detected, do not recommend rollout and tell the user to investigate assignment or logging. If SRM is not detected, say that this specific integrity check passed but does not prove randomization or overall experiment validity. Use human-readable business labels in prose, never snake_case field names."""
 
 
 class Copilot:
@@ -44,7 +49,10 @@ class Copilot:
         response = self.client.responses.parse(
             model=self.model,
             input=[
-                {"role": "system", "content": PLANNER_PROMPT.format(schema=json.dumps(ALLOWED_SCHEMA))},
+                {
+                    "role": "system",
+                    "content": PLANNER_PROMPT.format(schema=json.dumps(ALLOWED_SCHEMA)),
+                },
                 {"role": "user", "content": question},
             ],
             text_format=AnalysisPlan,
@@ -57,7 +65,9 @@ class Copilot:
             AnalysisType.FUNNEL: lambda: funnel_analysis(
                 df, {item.column: item.value for item in plan.filters}
             ),
-            AnalysisType.SEGMENT: lambda: segment_analysis(df, plan.metric, plan.dimension or "device"),
+            AnalysisType.SEGMENT: lambda: segment_analysis(
+                df, plan.metric, plan.dimension or "device"
+            ),
             AnalysisType.EXPERIMENT: lambda: experiment_analysis(df, plan.metric),
             AnalysisType.UNSUPPORTED: lambda: AnalysisResult(
                 analysis_type=AnalysisType.UNSUPPORTED,
@@ -134,7 +144,13 @@ class Copilot:
             kind = AnalysisType.SEGMENT
         else:
             kind = AnalysisType.KPI
-        dimension = "acquisition_channel" if "channel" in q else "customer_segment" if "segment" in q else "device"
+        dimension = (
+            "acquisition_channel"
+            if "channel" in q
+            else "customer_segment"
+            if "segment" in q
+            else "device"
+        )
         return AnalysisPlan(
             analysis_type=kind,
             metric="activation_rate",
@@ -147,8 +163,15 @@ class Copilot:
     def _demo_interpret(result: AnalysisResult) -> str:
         s = result.summary
         if result.analysis_type == AnalysisType.EXPERIMENT:
-            verdict = "statistically significant" if s["significant"] else "not statistically significant"
-            return f"Treatment changed activation by {s['absolute_lift']:.1%} ({verdict}, p={s['p_value']:.3g}). The 30-day engagement guardrail changed by {s['guardrail_30d_lift']:.1%}. Review operational and compliance constraints before rollout."
+            verdict = (
+                "statistically significant" if s["significant"] else "not statistically significant"
+            )
+            srm = (
+                "SRM detected; investigate assignment or logging before rollout"
+                if s["srm_detected"]
+                else "no SRM detected at the 1% threshold"
+            )
+            return f"Treatment changed activation by {s['absolute_lift']:.1%} ({verdict}, p={s['p_value']:.3g}). The 30-day engagement guardrail changed by {s['guardrail_30d_lift']:.1%}. The allocation check found {srm} (p={s['srm_p_value']:.3g})."
         if result.analysis_type == AnalysisType.FUNNEL:
             return f"The largest loss occurs before {s['largest_drop_off_before']}: {s['lost_customers']:,} customers. Segment this step by device and acquisition channel next."
         if result.analysis_type == AnalysisType.SEGMENT:

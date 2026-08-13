@@ -47,6 +47,7 @@ flowchart LR
 - The LLM cannot execute arbitrary code, write SQL, invent fields, or calculate metrics.
 - The MVP supports only KPI definition, funnel, three segmentation dimensions, and A/B testing.
 - The experiment engine uses a two-sided two-proportion z-test and an unpooled 95% CI.
+- The experiment engine checks sample-ratio mismatch against a prespecified 50/50 allocation and flags p-values below 0.01.
 - Segment analysis is descriptive. Experiment interpretation assumes random assignment.
 - No customer data is bundled; all demo records are synthetic.
 - Uploaded mappings are session-scoped and require explicit user confirmation.

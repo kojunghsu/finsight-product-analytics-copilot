@@ -170,7 +170,7 @@ Start with onboarding and growth teams at digital banks and fintechs that alread
 |---|---|---|
 | Schema or metric hallucination | Allowlisted structured plan | Approve the semantic layer and metric definitions |
 | Incorrect numerical claims | Deterministic Python calculations | Review data quality and analytical assumptions |
-| Overstated causal or rollout language | Experiment-specific prompt rules and limitations | Validate randomization, SRM, operational, legal, and compliance constraints |
+| Overstated causal or rollout language | Experiment-specific prompt rules, SRM alert, and limitations | Validate randomization, operational, legal, and compliance constraints |
 | Sensitive financial data exposure | Synthetic data in the prototype | Approve production hosting, access, retention, and PII controls |
 | Automation bias | Visible audit trail and bounded next step | Make the final product and rollout decision |
 

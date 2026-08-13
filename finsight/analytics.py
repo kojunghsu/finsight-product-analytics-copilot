@@ -56,7 +56,11 @@ def define_kpis(df: pd.DataFrame) -> AnalysisResult:
     for name, (column, definition) in METRICS.items():
         rows.append({"metric": name, "definition": definition, "value": float(df[column].mean())})
     rows.append(
-        {"metric": "average_spend_30d", "definition": "Average 30-day spend per signed-up customer", "value": float(df["spend_30d"].mean())}
+        {
+            "metric": "average_spend_30d",
+            "definition": "Average 30-day spend per signed-up customer",
+            "value": float(df["spend_30d"].mean()),
+        }
     )
     return AnalysisResult(
         analysis_type=AnalysisType.KPI,
@@ -65,6 +69,7 @@ def define_kpis(df: pd.DataFrame) -> AnalysisResult:
         table=rows,
         notes=["Rates use all signed-up customers as the denominator."],
     )
+
 
 def funnel_analysis(df: pd.DataFrame, filters: dict[str, str] | None = None) -> AnalysisResult:
     validate_data(df)
@@ -86,13 +91,19 @@ def funnel_analysis(df: pd.DataFrame, filters: dict[str, str] | None = None) -> 
     return AnalysisResult(
         analysis_type=AnalysisType.FUNNEL,
         title="Onboarding funnel",
-        summary={"customers": len(view), "largest_drop_off_before": largest["step"], "lost_customers": largest["drop_off"]},
+        summary={
+            "customers": len(view),
+            "largest_drop_off_before": largest["step"],
+            "lost_customers": largest["drop_off"],
+        },
         table=rows,
         notes=["Funnel stages are sequential by construction."],
     )
 
 
-def segment_analysis(df: pd.DataFrame, metric: str = "activation_rate", dimension: str = "device") -> AnalysisResult:
+def segment_analysis(
+    df: pd.DataFrame, metric: str = "activation_rate", dimension: str = "device"
+) -> AnalysisResult:
     validate_data(df)
     allowed_dimensions = {"device", "acquisition_channel", "customer_segment"}
     if dimension not in allowed_dimensions:
@@ -110,13 +121,18 @@ def segment_analysis(df: pd.DataFrame, metric: str = "activation_rate", dimensio
     return AnalysisResult(
         analysis_type=AnalysisType.SEGMENT,
         title=f"{metric.replace('_', ' ').title()} by {dimension.replace('_', ' ')}",
-        summary={"lowest_segment": str(table[0][dimension]), "lowest_rate": float(table[0]["rate"])},
+        summary={
+            "lowest_segment": str(table[0][dimension]),
+            "lowest_rate": float(table[0]["rate"]),
+        },
         table=table,
         notes=["Segment results are descriptive and do not establish causality."],
     )
 
 
-def _proportion_test(control_success: int, control_n: int, treatment_success: int, treatment_n: int) -> dict:
+def _proportion_test(
+    control_success: int, control_n: int, treatment_success: int, treatment_n: int
+) -> dict:
     p_c, p_t = control_success / control_n, treatment_success / treatment_n
     lift = p_t - p_c
     se_unpooled = math.sqrt(p_c * (1 - p_c) / control_n + p_t * (1 - p_t) / treatment_n)
@@ -137,6 +153,26 @@ def _proportion_test(control_success: int, control_n: int, treatment_success: in
     }
 
 
+def _sample_ratio_mismatch(
+    control_n: int, treatment_n: int, expected_control_share: float = 0.5
+) -> dict:
+    """Two-sided normal approximation for a prespecified two-cell allocation ratio."""
+    total = control_n + treatment_n
+    expected_control = total * expected_control_share
+    expected_treatment = total * (1 - expected_control_share)
+    variance = total * expected_control_share * (1 - expected_control_share)
+    z = (control_n - expected_control) / math.sqrt(variance) if variance else 0.0
+    p_value = float(2 * norm.sf(abs(z)))
+    return {
+        "expected_control_share": expected_control_share,
+        "observed_control_share": control_n / total,
+        "expected_control_n": expected_control,
+        "expected_treatment_n": expected_treatment,
+        "srm_p_value": p_value,
+        "srm_detected": bool(p_value < 0.01),
+    }
+
+
 def experiment_analysis(df: pd.DataFrame, metric: str = "activation_rate") -> AnalysisResult:
     validate_data(df)
     if metric not in METRICS:
@@ -146,17 +182,45 @@ def experiment_analysis(df: pd.DataFrame, metric: str = "activation_rate") -> An
     treatment = df[df["experiment_group"] == "Treatment"]
     if control.empty or treatment.empty:
         raise ValueError("Experiment requires both Control and Treatment groups.")
-    stats = _proportion_test(int(control[outcome].sum()), len(control), int(treatment[outcome].sum()), len(treatment))
-    guardrail = _proportion_test(int(control["active_30d"].sum()), len(control), int(treatment["active_30d"].sum()), len(treatment))
+    stats = _proportion_test(
+        int(control[outcome].sum()), len(control), int(treatment[outcome].sum()), len(treatment)
+    )
+    guardrail = _proportion_test(
+        int(control["active_30d"].sum()),
+        len(control),
+        int(treatment["active_30d"].sum()),
+        len(treatment),
+    )
+    srm = _sample_ratio_mismatch(len(control), len(treatment))
     rows = [
-        {"group": "Control", "customers": len(control), "conversions": int(control[outcome].sum()), "rate": stats["control_rate"]},
-        {"group": "Treatment", "customers": len(treatment), "conversions": int(treatment[outcome].sum()), "rate": stats["treatment_rate"]},
+        {
+            "group": "Control",
+            "customers": len(control),
+            "conversions": int(control[outcome].sum()),
+            "rate": stats["control_rate"],
+        },
+        {
+            "group": "Treatment",
+            "customers": len(treatment),
+            "conversions": int(treatment[outcome].sum()),
+            "rate": stats["treatment_rate"],
+        },
     ]
-    summary = {**stats, "metric": metric, "guardrail_30d_lift": guardrail["absolute_lift"], "guardrail_30d_p_value": guardrail["p_value"]}
+    summary = {
+        **stats,
+        **srm,
+        "metric": metric,
+        "guardrail_30d_lift": guardrail["absolute_lift"],
+        "guardrail_30d_p_value": guardrail["p_value"],
+    }
     return AnalysisResult(
         analysis_type=AnalysisType.EXPERIMENT,
         title=f"A/B test: {metric.replace('_', ' ')}",
         summary=summary,
         table=rows,
-        notes=["Two-sided two-proportion z-test; 95% unpooled confidence interval.", "Random assignment is assumed; sample-ratio mismatch is not tested in this MVP."],
+        notes=[
+            "Two-sided two-proportion z-test; 95% unpooled confidence interval.",
+            "Random assignment and a prespecified 50/50 allocation are assumed.",
+            "SRM uses a two-sided normal approximation with a conservative 1% alert threshold.",
+        ],
     )

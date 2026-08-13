@@ -63,7 +63,7 @@ The metadata must not contain API keys or uploaded row-level records. Mapping is
 - KPI: define and calculate onboarding metrics.
 - Funnel: calculate stage counts, overall conversion, step conversion, and drop-off.
 - Segmentation: compare activation across device, acquisition channel, or customer segment.
-- Experiment: calculate group rates, absolute and relative lift, 95% confidence interval, two-sided p-value, and a 30-day engagement guardrail.
+- Experiment: calculate group rates, absolute and relative lift, 95% confidence interval, two-sided p-value, a 30-day engagement guardrail, and sample-ratio mismatch (SRM).
 
 ### LLM interpreter
 
@@ -117,7 +117,8 @@ The metadata must not contain API keys or uploaded row-level records. Mapping is
 
 ## Known limitations
 
-- Sample-ratio mismatch and power/MDE are not yet tested.
+- Power/MDE is not yet calculated.
+- SRM assumes a prespecified 50/50 allocation and uses a 1% alert threshold.
 - Segment effects are not yet calculated inside the experiment workflow.
 - Event-order validity is assumed by the synthetic generator.
 - The current UI keeps one displayed response rather than persistent conversation history.

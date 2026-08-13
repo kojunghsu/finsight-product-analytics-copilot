@@ -48,7 +48,7 @@ python3 -m pytest
 python3 -m ruff check .
 ```
 
-Expected automated result at the time of submission: **8 tests passed**.
+Expected automated result at the time of submission: **9 tests passed**.
 
 ## Scope boundaries to state clearly
 
@@ -56,7 +56,7 @@ Expected automated result at the time of submission: **8 tests passed**.
 - The prototype supports four governed onboarding workflows.
 - Schema suggestions require human confirmation and do not prove business-semantic equivalence.
 - Segment comparisons are descriptive.
-- A/B interpretation assumes random assignment; sample-ratio mismatch and power/MDE are not yet tested.
+- A/B interpretation assumes random assignment; SRM is checked against a prespecified 50/50 allocation, while power/MDE is not yet calculated.
 - Pricing, market position, and business value are hypotheses, not validated commercial results.
 - FinSight prepares decisions but does not approve product, legal, compliance, or rollout actions.
 

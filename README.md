@@ -20,7 +20,7 @@ The synthetic generator intentionally embeds testable patterns: Android and Paid
 - Reproducible synthetic dataset generator (30,000 customers by default)
 - Schema-aware LLM planner with structured output
 - Deterministic KPI, funnel, segmentation, and experiment engines
-- Two-proportion A/B test with lift, confidence interval, p-value, and guardrail
+- Two-proportion A/B test with lift, confidence interval, p-value, guardrail, and SRM check
 - Streamlit chat UI with upload, charts, and an auditable plan/result trace
 - Offline deterministic demo mode when no API key is present
 - Tests plus architecture and productization documentation
