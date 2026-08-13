@@ -14,8 +14,141 @@ from finsight.use_cases import KNOWN_FIELDS, assess_compatibility, experiment_co
 
 load_dotenv()
 st.set_page_config(page_title="FinSight", page_icon="📈", layout="wide")
-st.title("FinSight")
-st.caption("LLM-powered product analytics copilot for the credit-card customer lifecycle")
+st.markdown(
+    """
+    <style>
+    :root {
+        --fs-navy: #0B1F33;
+        --fs-navy-2: #12304A;
+        --fs-teal: #00A6A6;
+        --fs-emerald: #0E9F6E;
+        --fs-cyan: #DDF7F5;
+        --fs-ink: #152536;
+        --fs-muted: #64748B;
+        --fs-line: #DCE6EC;
+        --fs-surface: #F6F9FB;
+    }
+    .stApp {
+        background: linear-gradient(180deg, #F7FAFC 0%, #FFFFFF 38%);
+        color: var(--fs-ink);
+    }
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, var(--fs-navy) 0%, var(--fs-navy-2) 100%);
+        border-right: 1px solid rgba(255,255,255,.08);
+    }
+    [data-testid="stSidebar"] * { color: #EAF4F7; }
+    [data-testid="stSidebar"] [data-testid="stCaptionContainer"] * { color: #AFC5D2; }
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] {
+        background: rgba(255,255,255,.08);
+        border: 1px dashed rgba(255,255,255,.28);
+        border-radius: 14px;
+    }
+    [data-testid="stSidebar"] button {
+        background: #FFFFFF;
+        color: var(--fs-navy) !important;
+        border: 0;
+    }
+    .fs-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 30px 34px;
+        margin: 4px 0 24px;
+        border-radius: 22px;
+        background: linear-gradient(125deg, #071B2F 0%, #123B55 62%, #007F83 100%);
+        box-shadow: 0 18px 45px rgba(11,31,51,.16);
+    }
+    .fs-hero:after {
+        content: "";
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        right: -70px;
+        top: -150px;
+        border-radius: 50%;
+        background: rgba(99, 230, 218, .12);
+    }
+    .fs-brand-row { display: flex; align-items: center; gap: 13px; }
+    .fs-mark {
+        display: grid;
+        place-items: center;
+        width: 43px;
+        height: 43px;
+        border-radius: 13px;
+        background: linear-gradient(145deg, #20D6C7, #00A6A6);
+        color: #062437;
+        font-weight: 800;
+        letter-spacing: -.04em;
+    }
+    .fs-title { color: #FFFFFF; font-size: 38px; font-weight: 760; letter-spacing: -.04em; }
+    .fs-subtitle { color: #C9DFE7; font-size: 16px; margin-top: 13px; max-width: 780px; }
+    .fs-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .fs-badge {
+        padding: 6px 10px;
+        border: 1px solid rgba(255,255,255,.16);
+        border-radius: 999px;
+        background: rgba(255,255,255,.08);
+        color: #E9FBF9;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    [data-testid="stMetric"] {
+        background: #FFFFFF;
+        border: 1px solid var(--fs-line);
+        border-radius: 16px;
+        padding: 16px 18px;
+        box-shadow: 0 6px 18px rgba(15, 42, 61, .055);
+    }
+    [data-testid="stMetricLabel"] { color: var(--fs-muted); }
+    [data-testid="stMetricValue"] { color: var(--fs-navy); letter-spacing: -.035em; }
+    [data-testid="stAlert"] { border-radius: 14px; border-width: 1px; }
+    [data-testid="stExpander"] {
+        background: #FFFFFF;
+        border: 1px solid var(--fs-line);
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(15,42,61,.04);
+        overflow: hidden;
+    }
+    [data-testid="stDataFrame"] {
+        border: 1px solid var(--fs-line);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+    .stButton > button[kind="primary"] {
+        background: linear-gradient(135deg, #008F91, #00B3A7);
+        color: #FFFFFF;
+        border: 0;
+        border-radius: 10px;
+        box-shadow: 0 6px 16px rgba(0,166,166,.20);
+    }
+    .stButton > button[kind="primary"]:hover {
+        background: linear-gradient(135deg, #007E81, #009D94);
+        color: #FFFFFF;
+    }
+    [data-testid="stChatMessage"] {
+        background: #FFFFFF;
+        border: 1px solid var(--fs-line);
+        border-radius: 16px;
+        padding: 10px 14px;
+    }
+    [data-testid="stChatInput"] { border-color: #B8CCD5; border-radius: 14px; }
+    h1, h2, h3 { color: var(--fs-navy) !important; letter-spacing: -.025em; }
+    hr { border-color: var(--fs-line) !important; }
+    </style>
+    <div class="fs-hero">
+      <div class="fs-brand-row">
+        <div class="fs-mark">FS</div>
+        <div class="fs-title">FinSight</div>
+      </div>
+      <div class="fs-subtitle">Governed product analytics for the credit-card customer lifecycle—turning business questions into reviewable evidence.</div>
+      <div class="fs-badges">
+        <span class="fs-badge">LLM-guided</span>
+        <span class="fs-badge">Python-verified</span>
+        <span class="fs-badge">Human-approved</span>
+      </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 DISPLAY_NAMES = {
     "metric": "Metric",
@@ -362,7 +495,7 @@ if question:
                                 sort=group_order,
                                 scale=alt.Scale(
                                     domain=group_order,
-                                    range=["#64748B", "#FF4B4B"],
+                                    range=["#64748B", "#00A6A6"],
                                 ),
                                 legend=None,
                             ),
@@ -405,8 +538,8 @@ if question:
                         bars = base.mark_bar(cornerRadiusEnd=5, height=24).encode(
                             color=alt.condition(
                                 "datum.highlight",
-                                alt.value("#FF4B4B"),
-                                alt.value("#94A3B8"),
+                                alt.value("#00A6A6"),
+                                alt.value("#7E9AAF"),
                             ),
                             tooltip=[
                                 alt.Tooltip(f"{category}:N", title=category_title),
@@ -428,7 +561,7 @@ if question:
                 elif "overall_conversion" in table.columns:
                     st.altair_chart(
                         alt.Chart(table)
-                        .mark_bar()
+                        .mark_bar(color="#00A6A6", cornerRadiusEnd=5, height=28)
                         .encode(
                             x=alt.X(
                                 "overall_conversion:Q",
