@@ -324,6 +324,7 @@ if question:
                                 sort=category_order,
                                 title=None,
                                 axis=alt.Axis(labelFontSize=13, labelPadding=10),
+                                scale=alt.Scale(paddingInner=0.42, paddingOuter=0.22),
                             ),
                             x=alt.X(
                                 "rate:Q",
@@ -332,7 +333,7 @@ if question:
                                 title="Activation rate",
                             ),
                         )
-                        bars = base.mark_bar(cornerRadiusEnd=5, height=30).encode(
+                        bars = base.mark_bar(cornerRadiusEnd=5, height=24).encode(
                             color=alt.condition(
                                 "datum.highlight",
                                 alt.value("#FF4B4B"),
@@ -352,7 +353,7 @@ if question:
                             fontWeight="bold",
                         ).encode(text=alt.Text("rate:Q", format=".1%"))
                         st.altair_chart(
-                            (bars + labels).properties(height=max(150, 55 * len(chart_table))),
+                            (bars + labels).properties(height=max(220, 72 * len(chart_table))),
                             width="stretch",
                         )
                 elif "overall_conversion" in table.columns:
