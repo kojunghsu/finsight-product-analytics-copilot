@@ -54,6 +54,8 @@ python3 -m ruff check .
 
 Uploaded CSVs must contain `customer_id`, `device`, `acquisition_channel`, `customer_segment`, `experiment_group`, `spend_30d`, and the sequential binary event columns `signed_up`, `identity_verified`, `card_activated`, `first_transaction`, and `active_30d`. The bundled demo additionally includes optional `signup_date` and `transactions_30d` fields.
 
+If an uploaded file uses different column names, FinSight opens a schema-mapping review. It may preselect conservative alias matches, but a user must confirm every required mapping before Python validates or analyzes the data. FinSight never silently changes KPI definitions.
+
 ## Repository guide
 
 - `app.py` — Streamlit experience

@@ -29,6 +29,7 @@ FinSight helps digital-banking product teams translate natural-language onboardi
 
 - Generate 5K–50K synthetic customers with a fixed seed.
 - Accept a CSV upload and switch the active data source.
+- When column names differ, show conservative mapping suggestions and require user confirmation.
 - Validate required columns before showing KPIs or accepting questions.
 - Show a clear error without a traceback when the contract is invalid.
 - Never commit API keys or uploaded data to the repository.
@@ -72,6 +73,7 @@ FinSight helps digital-banking product teams translate natural-language onboardi
 | No upload | Use reproducible synthetic data |
 | Missing API key | Run clearly labeled deterministic demo mode |
 | Invalid CSV | List missing required fields and stop analysis |
+| Different column names | Require a human-reviewed schema mapping before analysis |
 | Empty filter result | Explain that no rows match |
 | Missing Control or Treatment | Explain that both groups are required |
 | Unsupported metric or dimension | Reject it with the allowed values |

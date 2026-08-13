@@ -4,8 +4,9 @@ import streamlit as st
 from dotenv import load_dotenv
 from openai import OpenAIError
 
-from finsight.analytics import validate_data
+from finsight.analytics import REQUIRED_COLUMNS, validate_data
 from finsight.copilot import Copilot
+from finsight.schema import suggest_mapping
 from finsight.synthetic import generate_onboarding_data
 
 load_dotenv()
@@ -31,12 +32,56 @@ def sample_data(n: int) -> pd.DataFrame:
 
 if uploaded:
     try:
-        df = pd.read_csv(uploaded)
+        raw_df = pd.read_csv(uploaded)
+        mapping_key = f"schema_mapping::{uploaded.name}::{uploaded.size}"
+        missing = sorted(REQUIRED_COLUMNS - set(raw_df.columns))
+        if missing and mapping_key not in st.session_state:
+            st.warning(
+                "This CSV uses a different schema. Review the suggested mappings before analysis."
+            )
+            candidate_columns = [
+                column for column in raw_df.columns if column not in REQUIRED_COLUMNS
+            ]
+            with st.form("schema_mapping_form"):
+                st.subheader("Schema Mapping Review")
+                st.caption(
+                    "Suggestions are conservative starting points. Confirm the business meaning of every event before applying them."
+                )
+                proposed = {}
+                for target in missing:
+                    suggestion = suggest_mapping(target, candidate_columns)
+                    options = ["— Not mapped —", *candidate_columns]
+                    index = options.index(suggestion) if suggestion in options else 0
+                    proposed[target] = st.selectbox(
+                        target.replace("_", " ").title(),
+                        options,
+                        index=index,
+                        key=f"map::{mapping_key}::{target}",
+                    )
+                if st.form_submit_button("Apply confirmed mapping", type="primary"):
+                    selected = {
+                        target: source
+                        for target, source in proposed.items()
+                        if source != "— Not mapped —"
+                    }
+                    if len(selected) != len(missing):
+                        st.error("Map every required field before continuing.")
+                    elif len(set(selected.values())) != len(selected):
+                        st.error("Each uploaded column can map to only one FinSight field.")
+                    else:
+                        st.session_state[mapping_key] = selected
+                        st.rerun()
+            st.stop()
+
+        mapping = st.session_state.get(mapping_key, {})
+        df = raw_df.rename(columns={source: target for target, source in mapping.items()})
         validate_data(df)
         if "signup_date" in df.columns:
             df["signup_date"] = pd.to_datetime(df["signup_date"], errors="coerce")
         with st.sidebar:
             st.success("Uploaded CSV active")
+            if mapping:
+                st.caption(f"Confirmed schema mappings: {len(mapping)}")
     except (ValueError, pd.errors.ParserError) as exc:
         st.error(f"This CSV cannot be analyzed: {exc}")
         st.info("Upload a CSV that follows the FinSight data contract described in README.md.")

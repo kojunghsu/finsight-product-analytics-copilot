@@ -21,17 +21,18 @@ METRICS = {
     "engagement_rate_30d": ("active_30d", "Signed-up customers active within 30 days"),
 }
 
+REQUIRED_COLUMNS = {column for _, column in FUNNEL_STEPS} | {
+    "customer_id",
+    "device",
+    "acquisition_channel",
+    "customer_segment",
+    "experiment_group",
+    "spend_30d",
+}
+
 
 def validate_data(df: pd.DataFrame) -> None:
-    required = {column for _, column in FUNNEL_STEPS} | {
-        "customer_id",
-        "device",
-        "acquisition_channel",
-        "customer_segment",
-        "experiment_group",
-        "spend_30d",
-    }
-    missing = required - set(df.columns)
+    missing = REQUIRED_COLUMNS - set(df.columns)
     if missing:
         raise ValueError(f"Missing required columns: {', '.join(sorted(missing))}")
     if df.empty:

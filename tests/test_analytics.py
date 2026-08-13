@@ -1,6 +1,7 @@
 import pytest
 
 from finsight.analytics import experiment_analysis, funnel_analysis, segment_analysis
+from finsight.schema import suggest_mapping
 from finsight.synthetic import generate_onboarding_data
 
 
@@ -28,3 +29,11 @@ def test_treatment_improves_activation(data):
 def test_missing_columns_fail_clearly(data):
     with pytest.raises(ValueError, match="Missing required columns"):
         funnel_analysis(data.drop(columns=["card_activated"]))
+
+
+def test_schema_mapping_suggests_known_aliases_only():
+    columns = ["user_id", "kyc_completed", "first_purchase", "unrelated_notes"]
+    assert suggest_mapping("customer_id", columns) == "user_id"
+    assert suggest_mapping("identity_verified", columns) == "kyc_completed"
+    assert suggest_mapping("first_transaction", columns) == "first_purchase"
+    assert suggest_mapping("spend_30d", columns) is None
