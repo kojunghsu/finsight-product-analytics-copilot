@@ -43,6 +43,27 @@ st.markdown(
         border: 1px dashed rgba(255,255,255,.28);
         border-radius: 14px;
     }
+    [data-testid="stSidebar"] [data-testid="stFileUploaderFile"] {
+        background: #F3F7FA;
+        border-radius: 11px;
+    }
+    [data-testid="stSidebar"] [data-testid="stFileUploaderFileName"],
+    [data-testid="stSidebar"] [data-testid="stFileUploaderFileName"] *,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderFileSize"],
+    [data-testid="stSidebar"] [data-testid="stFileUploaderFileSize"] * {
+        color: var(--fs-navy) !important;
+        opacity: 1 !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDeleteBtn"] {
+        background: #FFFFFF;
+        border: 1px solid #00A6A6;
+        box-shadow: none;
+    }
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDeleteBtn"] * {
+        color: #007F83 !important;
+        fill: #007F83 !important;
+        stroke: #007F83 !important;
+    }
     [data-testid="stSidebar"] button {
         background: linear-gradient(135deg, #00B8B0, #008F91);
         color: #FFFFFF !important;
