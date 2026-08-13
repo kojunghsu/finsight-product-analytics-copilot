@@ -51,11 +51,15 @@ st.markdown(
     [data-testid="stSidebar"] [data-testid="stFileUploaderFileName"] *,
     [data-testid="stSidebar"] [data-testid="stFileUploaderFileSize"],
     [data-testid="stSidebar"] [data-testid="stFileUploaderFileSize"] *,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderFileData"],
+    [data-testid="stSidebar"] [data-testid="stFileUploaderFileData"] *,
     [data-testid="stSidebar"] [data-testid="stFileUploaderFile"] div,
     [data-testid="stSidebar"] [data-testid="stFileUploaderFile"] span,
     [data-testid="stSidebar"] [data-testid="stFileUploaderFile"] small {
         color: var(--fs-navy) !important;
         opacity: 1 !important;
+        font-weight: 650 !important;
+        -webkit-text-fill-color: var(--fs-navy) !important;
     }
     [data-testid="stSidebar"] [data-testid="stFileUploaderDeleteBtn"] {
         background: #FFFFFF;
