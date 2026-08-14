@@ -79,7 +79,7 @@ If an uploaded file uses different column names, FinSight opens a schema-mapping
 5. Map the fields whose business meanings are equivalent and ensure each uploaded column is used only once.
 6. Click **Apply selected mappings**.
 7. Review **Dataset compatibility** to see which product modules are Ready, Limited, or Unavailable.
-8. Verify **Uploaded CSV active** and the number of confirmed mappings in the sidebar.
+8. Verify the sidebar status: **Uploaded CSV active** when at least one complete workflow is Ready, or **CSV loaded — no supported analyses** when the file cannot support any governed workflow.
 9. Ask a supported demo or free-form product analytics question.
 10. Expand **Audit trail** to review the file metadata, confirmed mappings, analysis plan, and deterministic result.
 
@@ -109,6 +109,7 @@ The audit trail records non-sensitive provenance metadata: source type, file nam
 - `docs/BUSINESS_PLAN.md` — users, value proposition, landscape, pricing, GTM, risks, roadmap
 - `docs/PRODUCT_SPEC.md` — workflows, requirements, error states, non-goals, acceptance criteria
 - `docs/SUBMISSION_GUIDE.md` — deliverables, demo sequence, validation, and submission safety
+- `docs/presentation/` — PDF presentation for the assignment/demo
 - `tests/` — analytical ground-truth and routing tests
 
 ## Upload test pack
@@ -129,6 +130,7 @@ FinSight demonstrates product KPI design, funnel and customer analysis, controll
 - [Business plan](docs/BUSINESS_PLAN.md)
 - [Product specification](docs/PRODUCT_SPEC.md)
 - [Assignment submission guide](docs/SUBMISSION_GUIDE.md)
+- [Product overview slides (PDF)](docs/presentation/FinSight_Product_Overview.pdf)
 
 ## License
 

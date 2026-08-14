@@ -48,6 +48,8 @@ If the question asks for prediction, forecasting, regression, causal analysis ou
 INTERPRETER_PROMPT = """You are FinSight's product analytics interpreter. Explain the supplied deterministic result to a product manager.
 Lead with the finding, cite the key numbers, state statistical/descriptive limitations, and give one bounded next step.
 Never recalculate, alter, or invent a number, field, metric, segment, or data source. A next step may reference only fields and dimensions in the supplied schema allowlist. Avoid causal language unless the result is a randomized experiment.
+Format rates as percentages, normally to one decimal place, and monetary values with a currency symbol and two decimal places. Do not expose raw decimal rates in prose.
+Recommend only analyses executable in the current MVP. Do not recommend cross-filtering, multivariate analysis, or breaking a funnel, engagement result, or retention result down within another dimension; those are roadmap ideas, not executable next steps. A supported descriptive next step may compare the same KPI overall by one allowed dimension.
 When the user's question asks what caused, drove, or explains a descriptive segment difference, lead by saying that the supplied analysis cannot determine the cause. You may then report the observed descriptive rates. Do not call a difference statistically significant, insignificant, meaningful, or immaterial unless the supplied result contains the corresponding test or threshold. State that cross-filtered, multivariate, or causal driver analysis is outside the current MVP; if you mention one as a useful future diagnostic, label it explicitly as not executable in the current MVP.
 For randomized experiments, describe lift as an estimated treatment effect under the random-assignment assumption. Always report the supplied sample-ratio-mismatch result. If SRM is detected, do not recommend rollout and tell the user to investigate assignment or logging. If SRM is not detected, say that this specific integrity check passed but does not prove randomization or overall experiment validity. Use human-readable business labels in prose, never snake_case field names.
 If either experiment group has fewer than 100 customers, explicitly call the result exploratory and recommend collecting more observations or reviewing power and minimum detectable effect. Do not recommend segmenting a small experiment because that would reduce sample sizes further.
@@ -82,7 +84,41 @@ class Copilot:
             ],
             text_format=AnalysisPlan,
         )
-        return response.output_parsed
+        return self._enforce_explicit_intent(question, response.output_parsed)
+
+    @staticmethod
+    def _enforce_explicit_intent(question: str, plan: AnalysisPlan) -> AnalysisPlan:
+        """Keep high-confidence lifecycle requests from drifting into a nearby workflow."""
+        q = question.casefold()
+        if any(term in q for term in ["90-day", "90 day", "retention", "inactivity"]):
+            return plan.model_copy(
+                update={
+                    "analysis_type": AnalysisType.RETENTION,
+                    "metric": "active_rate_90d",
+                    "dimension": None,
+                    "filters": [],
+                    "rationale": "Explicit 30-day/90-day or retention request routed to retention analysis.",
+                }
+            )
+        if any(
+            phrase in q
+            for phrase in [
+                "define the primary kpi",
+                "define primary kpi",
+                "what should we measure",
+                "which kpi",
+            ]
+        ):
+            return plan.model_copy(
+                update={
+                    "analysis_type": AnalysisType.KPI,
+                    "metric": "activation_rate",
+                    "dimension": None,
+                    "filters": [],
+                    "rationale": "Explicit KPI-definition request routed to KPI analysis.",
+                }
+            )
+        return plan
 
     def run(self, df: pd.DataFrame, plan: AnalysisPlan) -> AnalysisResult:
         tools: dict[AnalysisType, Callable[[], AnalysisResult]] = {
@@ -125,6 +161,8 @@ class Copilot:
             )
 
     def interpret(self, question: str, plan: AnalysisPlan, result: AnalysisResult) -> str:
+        if result.analysis_type == AnalysisType.UNSUPPORTED:
+            return self._unsupported_interpret(result)
         if result.analysis_type == AnalysisType.SEGMENT and self._is_causal_question(question):
             return self._causal_segment_interpret(plan, result)
         if not self.client:
@@ -171,6 +209,32 @@ class Copilot:
             "multivariate, or causal driver test was run. Cross-filtered driver analysis is outside the current MVP. "
             f"As a supported descriptive next step, compare overall activation by {next_dimensions}; this may reveal "
             "another pattern but still will not establish causality."
+        )
+
+    @staticmethod
+    def _unsupported_interpret(result: AnalysisResult) -> str:
+        labels = {
+            "customer_id": "Customer ID",
+            "signed_up": "Signed Up",
+            "identity_verified": "Identity Verified",
+            "card_activated": "Card Activated",
+            "first_transaction": "First Transaction",
+            "active_30d": "Active 30D",
+            "active_90d": "Active 90D",
+            "transactions_30d": "Transactions 30D",
+            "spend_30d": "Spend 30D",
+            "experiment_group": "Experiment Group",
+        }
+        reason = result.notes[0] if result.notes else "The requested workflow is unavailable."
+        for field, label in labels.items():
+            reason = reason.replace(field, label)
+        reason = reason.rstrip()
+        if not reason.endswith((".", "!", "?")):
+            reason += "."
+        return (
+            f"FinSight did not run this analysis because the uploaded dataset is not compatible: {reason} "
+            "No KPI, comparison, statistical result, or chart was produced. Review Dataset compatibility "
+            "and upload customer-level data containing the required lifecycle fields."
         )
 
     def answer(self, df: pd.DataFrame, question: str) -> tuple[AnalysisPlan, AnalysisResult, str]:

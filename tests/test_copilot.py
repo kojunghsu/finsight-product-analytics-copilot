@@ -1,4 +1,4 @@
-from finsight.contracts import AnalysisResult, AnalysisType
+from finsight.contracts import AnalysisPlan, AnalysisResult, AnalysisType
 from finsight.copilot import Copilot
 
 
@@ -24,6 +24,53 @@ def test_unsupported_request_does_not_run_unrelated_analysis():
     bot = Copilot(client=None)
     plan = bot.plan("Build a churn prediction model")
     assert plan.analysis_type == AnalysisType.UNSUPPORTED
+
+
+def test_unsupported_dataset_message_uses_business_labels():
+    result = AnalysisResult(
+        analysis_type=AnalysisType.UNSUPPORTED,
+        title="Dataset not compatible with this analysis",
+        summary={},
+        notes=["Missing required columns: active_30d, customer_id"],
+    )
+    answer = Copilot._unsupported_interpret(result)
+    assert "Active 30D" in answer
+    assert "Customer ID" in answer
+    assert "active_30d" not in answer
+    assert "customer_id" not in answer
+    assert "No KPI" in answer
+    assert "Customer ID. No KPI" in answer
+
+
+def test_explicit_retention_intent_overrides_neighboring_llm_route():
+    wrong_plan = AnalysisPlan(
+        analysis_type=AnalysisType.KPI,
+        metric="activation_rate",
+        dimension="device",
+        filters=[],
+        rationale="Incorrect neighboring workflow.",
+    )
+    plan = Copilot._enforce_explicit_intent(
+        "How do 30-day and 90-day customer activity compare?", wrong_plan
+    )
+    assert plan.analysis_type == AnalysisType.RETENTION
+    assert plan.metric == "active_rate_90d"
+    assert plan.dimension is None
+
+
+def test_explicit_kpi_intent_overrides_neighboring_llm_route():
+    wrong_plan = AnalysisPlan(
+        analysis_type=AnalysisType.FUNNEL,
+        metric="activation_rate",
+        dimension=None,
+        filters=[],
+        rationale="Incorrect neighboring workflow.",
+    )
+    plan = Copilot._enforce_explicit_intent(
+        "What should we measure for onboarding?", wrong_plan
+    )
+    assert plan.analysis_type == AnalysisType.KPI
+    assert plan.metric == "activation_rate"
 
 
 def test_demo_causal_segment_question_refuses_unsupported_causal_claim():

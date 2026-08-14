@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from openai import OpenAIError
 
 from finsight.audit import build_data_context
+from finsight.contracts import AnalysisType
 from finsight.copilot import Copilot
 from finsight.schema import suggested_mappings
 from finsight.synthetic import generate_onboarding_data
@@ -342,10 +343,6 @@ if uploaded:
             raise ValueError("The dataset is empty.")
         if "signup_date" in df.columns:
             df["signup_date"] = pd.to_datetime(df["signup_date"], errors="coerce")
-        with st.sidebar:
-            st.success("Uploaded CSV active")
-            if mapping:
-                st.caption(f"Confirmed schema mappings: {len(mapping)}")
         data_context = build_data_context(
             source_type="uploaded_csv",
             file_name=uploaded.name,
@@ -365,6 +362,17 @@ copilot = Copilot()
 
 compatibility = assess_compatibility(df)
 experiment_status = experiment_compatibility(df)
+if uploaded is not None:
+    has_ready_analysis = any(item["status"] == "Ready" for item in compatibility) or (
+        experiment_status["status"] == "Ready"
+    )
+    with st.sidebar:
+        if has_ready_analysis:
+            st.success("Uploaded CSV active")
+        else:
+            st.warning("CSV loaded — no supported analyses")
+        if mapping:
+            st.caption(f"Confirmed schema mappings: {len(mapping)}")
 with st.expander("Dataset compatibility", expanded=uploaded is not None):
     st.caption(
         "FinSight enables only the credit-card use cases supported by confirmed fields. "
@@ -397,7 +405,10 @@ with st.expander("Dataset compatibility", expanded=uploaded is not None):
     st.dataframe(compatibility_table, width="stretch", hide_index=True)
 
 c1, c2, c3, c4 = st.columns(4)
-c1.metric("Customers", f"{len(df):,}")
+c1.metric(
+    "Customers",
+    f"{len(df):,}" if "customer_id" in df.columns else "Not available",
+)
 c2.metric(
     "Verified",
     f"{df['identity_verified'].mean():.1%}" if "identity_verified" in df else "Not available",
@@ -440,8 +451,23 @@ if question:
         plan, result, interpretation = copilot.answer(df, question)
         with st.chat_message("assistant"):
             st.write(interpretation)
-            route_label = plan.analysis_type.value.replace("_", " ").title()
-            st.caption(f"Analysis workflow: {route_label}")
+            route_labels = {
+                AnalysisType.KPI: "KPI Definition",
+                AnalysisType.FUNNEL: "Funnel",
+                AnalysisType.SEGMENT: "Segmentation",
+                AnalysisType.ENGAGEMENT: "Engagement Spend",
+                AnalysisType.RETENTION: "Retention Inactivity",
+                AnalysisType.EXPERIMENT: "Experiment",
+                AnalysisType.UNSUPPORTED: "Unsupported",
+            }
+            route_label = route_labels[plan.analysis_type]
+            if (
+                result.analysis_type == AnalysisType.UNSUPPORTED
+                and plan.analysis_type != AnalysisType.UNSUPPORTED
+            ):
+                st.caption(f"Requested workflow: {route_label} · Result: Unsupported")
+            else:
+                st.caption(f"Analysis workflow: {route_label}")
             table = pd.DataFrame(result.table)
             if not table.empty:
                 st.subheader(result.title)

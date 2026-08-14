@@ -17,6 +17,7 @@ FinSight is a detailed business application and local prototype, not an LLM tech
 | Setup and usage instructions | `README.md` |
 | Automated validation | `tests/` |
 | Synthetic upload test pack | `sample_data/` |
+| Presentation PDF | `docs/presentation/FinSight_Product_Overview.pdf` |
 
 ## Local setup
 
@@ -36,10 +37,11 @@ Add an OpenAI API key to the local `.env` file to enable LLM planning and interp
 2. Ask, “What should we measure for onboarding?”
 3. Ask, “Where are customers dropping off?”
 4. Ask which device or acquisition channel has the lowest activation.
-5. Ask whether the redesigned onboarding flow improved activation.
-6. Expand the audit trail to show that the LLM plan and Python result are separate.
-7. Upload `sample_data/00_all_use_cases_alias_mapping.csv`, review the approved alias mappings, and show the mapping metadata in the audit trail.
-8. If time allows, upload `sample_data/05_incompatible_transactions.csv` to demonstrate safe refusal without false mappings.
+5. Ask whether the redesigned onboarding flow improved activation, then show lift, confidence interval, p-value, guardrail, SRM, MDE, and the human-reviewed decision gate.
+6. Briefly show the engagement/spend and 30-day-versus-90-day retention questions so all four lifecycle use cases are visible.
+7. Expand the audit trail to show that the LLM plan and Python result are separate.
+8. Upload `sample_data/00_all_use_cases_alias_mapping.csv`, review the approved alias mappings, and show the mapping metadata in the audit trail.
+9. If time allows, upload `sample_data/05_incompatible_transactions.csv` to demonstrate safe refusal without false mappings or fabricated KPIs.
 
 The narrative is **Measure → Diagnose → Experiment → Decide**.
 
@@ -50,7 +52,7 @@ python3 -m pytest
 python3 -m ruff check .
 ```
 
-Expected automated result at the time of submission: **21 tests passed**.
+Expected automated result at the time of submission: **25 tests passed**.
 
 ## Scope boundaries to state clearly
 

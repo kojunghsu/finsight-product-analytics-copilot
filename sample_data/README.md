@@ -20,7 +20,7 @@ The full-lifecycle file intentionally uses approved aliases such as `user_id`, `
 ## Suggested questions
 
 1. Acquisition: `Where are customers dropping off?`
-2. Early use: `What should we measure for onboarding?`
+2. Early use: `How are customers progressing from card activation to first transaction and 30-day activity?`
 3. Engagement: `How are customers using and spending on the card?`
 4. Retention/inactivity: `How do 30-day and 90-day activity compare?`
 5. Full lifecycle: `Did the redesigned onboarding flow improve activation?`
