@@ -6,6 +6,19 @@ FinSight is an LLM-powered product analytics copilot for credit-card product tea
 
 The product hypothesis is that a narrow, auditable copilot can reduce the time between a product manager asking a question and an analyst reviewing a statistically grounded first-pass answer. FinSight is not positioned as a replacement for analysts or as a general-purpose data-science platform.
 
+## Product positioning
+
+> **For credit-card product managers and product analysts who need faster answers to recurring lifecycle questions, FinSight is a governed product analytics copilot that converts natural-language questions and customer-level CSV data into reviewable first-pass evidence. Unlike broad self-service analytics agents, FinSight uses a credit-card-specific metric contract, deterministic Python calculations, explicit dataset-compatibility checks, and human approval before decisions are acted upon.**
+
+FinSight occupies the decision-preparation layer between a business question and deeper analyst investigation. It does not replace the data warehouse, event-tracking platform, experimentation infrastructure, or product analyst. Its initial wedge is a recurring set of credit-card lifecycle decisions where speed, consistent definitions, and statistical traceability matter more than unlimited analytical flexibility.
+
+### Initial customer, user, and buyer
+
+- **Beachhead customer:** a digital bank or fintech with a credit-card product team and recurring onboarding, activation, engagement, retention, and experiment questions.
+- **Primary daily users:** product managers, product analysts, and growth or onboarding leads.
+- **Likely economic buyer for a pilot:** a Head of Product Analytics, Growth, Data, or Digital Product who owns analyst capacity and decision quality.
+- **Human value retained:** analysts validate schema meaning, data quality, assumptions, and recommendations; product and risk leaders retain final decision authority.
+
 ## Business problem
 
 Digital-banking product teams repeatedly ask questions such as:
@@ -37,6 +50,18 @@ Answering these questions often requires translating business language into metr
 - A visible handoff between automated first-pass analysis and human approval
 
 These are product hypotheses. The prototype does not claim measured commercial impact.
+
+### Customer value by category
+
+| Value category | Current workflow problem | FinSight value hypothesis |
+|---|---|---|
+| Speed | A bounded question waits for metric clarification and analyst setup | Produce a reviewable first pass in one governed workflow |
+| Consistency | KPI definitions and denominators vary across dashboards or notebooks | Reuse an explicit credit-card metric contract and deterministic calculations |
+| Trust | Open-ended AI answers may invent fields, numbers, or causal explanations | Separate LLM planning from Python computation and expose limitations and an audit trail |
+| Analyst leverage | Analysts repeatedly rebuild routine funnel and experiment summaries | Automate first-pass preparation while preserving analyst review for higher-value investigation |
+| Decision safety | Teams may analyze unsupported data or overstate descriptive results | Gate workflows by confirmed fields and refuse unsupported or causal claims |
+
+The commercial value is therefore not “more analytics features.” It is a shorter and more controlled path from a recurring product question to evidence that an analyst can review, correct, and communicate.
 
 ## Why an LLM is necessary
 
@@ -95,20 +120,22 @@ Detailed requirements, error states, non-goals, and acceptance criteria are docu
 
 Market review checked **August 13, 2026** using official vendor product and pricing pages. Products and prices may change.
 
-| Product | Current positioning relevant to FinSight | Pricing signal | Gap FinSight explores |
+| Product | Current market positioning | Pricing signal | FinSight's differentiated focus |
 |---|---|---|---|
-| Amplitude | Broad digital/product analytics platform with AI agents, product analytics, feature experimentation, session replay, and activation | Free tier; higher tiers scale by volume and enterprise requirements | FinSight is narrower: banking onboarding, four governed decisions, transparent Python calculations |
-| Mixpanel | Product analytics with funnels, retention, flows, session replay, Mixpanel Agent, and enterprise experimentation/security capabilities | First 1M monthly events free; Growth usage pricing and custom Enterprise | FinSight emphasizes statistical auditability and domain-specific decision language rather than broad self-service analytics |
-| Statsig | Integrated experimentation, feature management, product analytics, and session replay | Developer tier is free; Pro is listed at $150/month with included events | FinSight does not manage feature flags or experimentation infrastructure; it focuses on interpreting uploaded onboarding data |
-| ThoughtSpot Spotter | Enterprise AI analytics and natural-language data exploration with governed data integration | Developer pricing begins at $25/user/month; enterprise is custom | FinSight is a small local prototype with a constrained analytics contract rather than a general enterprise BI agent |
+| Amplitude | Broad product analytics platform covering behavioral analytics, experimentation, session replay, activation, and AI-assisted analysis | Free tier; higher tiers scale by volume and enterprise requirements | Credit-card-specific lifecycle metrics, dataset-compatibility checks, deterministic Python calculations, and human review |
+| Mixpanel | Self-service product analytics for funnels, retention, flows, segmentation, and AI-assisted exploration | First 1M monthly events free; Growth usage pricing and custom Enterprise | Governed metric definitions, schema confirmation, statistical auditability, and credit-card decision language rather than broad event exploration |
+| Statsig | Experimentation and feature-delivery platform combining feature flags, product analytics, and session replay | Developer tier is free; Pro is listed at $150/month with included events | Evaluation of uploaded experiment outcomes through CI, significance, SRM, MDE, guardrails, and bounded decision gates—not experiment delivery infrastructure |
+| ThoughtSpot Spotter | Enterprise AI analytics and natural-language data exploration integrated with governed business data | Developer pricing begins at $25/user/month; enterprise is custom | A constrained analytics contract for recurring credit-card lifecycle decisions, with LLM interpretation separated from deterministic computation |
 
 Official references: [Amplitude pricing and platform](https://amplitude.com/pricing), [Mixpanel pricing](https://mixpanel.com/pricing/), [Statsig pricing](https://statsig.com/pricing), [ThoughtSpot pricing](https://www.thoughtspot.com/pricing), and [ThoughtSpot Spotter](https://www.thoughtspot.com/product/agents/spotter).
 
 ### Competitive position
 
-FinSight should not claim feature superiority over established platforms. Its testable differentiation is:
+FinSight is complementary to established analytics platforms, not a feature-for-feature replacement. A data warehouse or product analytics platform stores and exposes the underlying data; FinSight tests whether a governed, domain-specific decision layer can make recurring credit-card questions faster and safer to answer.
 
-- four bounded, related use cases across the credit-card customer lifecycle;
+Its testable differentiation is:
+
+- four bounded, related use cases across the credit-card customer lifecycle plus experiment evaluation when compatible fields are present;
 - a small allowlisted workflow surface instead of open-ended analysis;
 - deterministic calculations separated from LLM reasoning;
 - an exposed plan/result audit trail;
@@ -116,23 +143,26 @@ FinSight should not claim feature superiority over established platforms. Its te
 
 The commercial question is whether this narrower experience creates enough speed, trust, or workflow fit to justify a standalone product or vertical add-on. That requires customer discovery and pilot evidence.
 
+The credit-card focus is a deliberate beachhead rather than the final market boundary. If customers validate the architecture and workflow, the same governed pattern could expand to deposit onboarding, consumer lending, digital wallets, BNPL, and other regulated financial-product journeys. Expansion would require a separately approved metric and schema contract for each product; FinSight would not assume that credit-card definitions transfer automatically.
+
 ## Pricing hypothesis
 
 The following figures are **illustrative hypotheses for customer interviews**, not validated willingness-to-pay or a launch commitment.
 
 | Tier | Illustrative price | Intended customer | Included hypothesis |
 |---|---:|---|---|
-| Free demo | $0 | Students and evaluators | Synthetic data, four lifecycle use cases, limited LLM questions |
-| Individual | $12/user/month | Individual PM or analyst | CSV upload, complete analyses, audit export |
-| Team | $99/month | One product squad, up to 10 users | Shared analyses, metric definitions, and review workflow |
-| Enterprise pilot | Custom; target $5,000–$10,000/year | Regulated financial institution testing one use case | Private pilot, onboarding support, and one governed data connection |
+| Free demo | $0 | Evaluators and individual practitioners | Synthetic data, sample files, and bounded lifecycle demonstrations |
+| Individual | $9–$15/user/month | Individual PM or analyst | CSV upload, supported lifecycle analyses, and audit export |
+| Team | $49–$79/month | One small product squad | Shared analyses, metric definitions, and review workflow |
+| Enterprise pilot | Custom; target $2,500–$5,000 for three months | Regulated financial institution testing one bounded use case | Private pilot, schema and KPI setup, evaluation support, and one governed data connection |
 
 ### Pricing logic
 
 - A free demo makes the prototype easy to evaluate without implying production readiness.
-- A low individual price reduces trial friction but must eventually cover model and support costs.
-- Team pricing aligns value with a product squad rather than charging for every query.
-- The enterprise offer is framed as a limited pilot because the MVP does not yet include full SSO, RBAC, private deployment, or production support.
+- A low individual price reflects the deliberately constrained MVP and reduces trial friction while testing willingness to pay.
+- Team pricing aligns value with one product squad instead of competing with the breadth of an enterprise analytics platform.
+- Enterprise pilot pricing covers schema validation, KPI configuration, evaluation, security review preparation, and onboarding support—not software feature breadth alone.
+- The enterprise offer remains a time-boxed pilot because the MVP does not yet include full SSO, RBAC, private deployment, or production support.
 - A production model would test seat-based, event-volume, and annual platform pricing against customer preferences.
 
 ## Go-to-market hypothesis
