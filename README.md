@@ -6,6 +6,21 @@ FinSight inspects an uploaded customer-level dataset and determines which of fou
 
 This is a local prototype for the **LLM Business Application** assignment track—not a generic data-science automation tool and not an autonomous decision maker.
 
+## Assignment deliverables — start here
+
+The **primary assignment deliverable** is the [FinSight business/productization plan](docs/BUSINESS_PLAN.md). It explains the business problem, target users, jobs to be done, value proposition, product design, market landscape, pricing hypothesis, go-to-market approach, success metrics, risks, and roadmap.
+
+The remaining artifacts provide evidence that the proposed product can be implemented and demonstrated:
+
+| Deliverable | Purpose |
+|---|---|
+| **[Business/productization plan](docs/BUSINESS_PLAN.md)** | **Primary written submission and commercial rationale** |
+| [Product overview presentation (PDF)](docs/presentation/FinSight_Product_Overview.pdf) | Concise presentation of positioning, use cases, architecture, and business value |
+| [Runnable prototype](app.py) | Local proof of the proposed user experience and governed analytics workflow |
+| [Product specification](docs/PRODUCT_SPEC.md) | Supported users, analyses, requirements, error states, and non-goals |
+| [Architecture](docs/ARCHITECTURE.md) | Separation between LLM responsibilities and deterministic Python |
+| [Submission and demo guide](docs/SUBMISSION_GUIDE.md) | Setup, validation, demonstration sequence, and submission boundaries |
+
 ## Demo story
 
 1. “What should we measure for onboarding?”

@@ -6,12 +6,21 @@
 
 FinSight is a detailed business application and local prototype, not an LLM technology deep dive or a generic LLM data-scientist pipeline.
 
+## Recommended review order
+
+1. Read [`BUSINESS_PLAN.md`](BUSINESS_PLAN.md) as the **primary written deliverable**.
+2. Review the [`FinSight product overview PDF`](presentation/FinSight_Product_Overview.pdf) for the concise presentation narrative.
+3. Follow the local setup below and run the prototype as implementation evidence.
+4. Consult [`PRODUCT_SPEC.md`](PRODUCT_SPEC.md) and [`ARCHITECTURE.md`](ARCHITECTURE.md) for detailed product and system decisions.
+
+The prototype, tests, sample data, and technical documentation support the business/productization plan; they are not substitutes for it.
+
 ## Deliverables in this repository
 
 | Deliverable | Location |
 |---|---|
+| **Primary written deliverable: business/productization plan** | **`docs/BUSINESS_PLAN.md`** |
 | Runnable local prototype | `app.py` and `finsight/` |
-| Business/productization plan | `docs/BUSINESS_PLAN.md` |
 | Product requirements and acceptance criteria | `docs/PRODUCT_SPEC.md` |
 | System and data-flow architecture | `docs/ARCHITECTURE.md` |
 | Setup and usage instructions | `README.md` |
