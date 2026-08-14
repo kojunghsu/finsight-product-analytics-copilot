@@ -4,22 +4,26 @@
 
 FinSight inspects an uploaded customer-level dataset and determines which of four credit-card product use cases it can support: Acquisition & Onboarding, Activation & Early Use, Engagement & Spend, and Retention & Inactivity. A/B experiment evaluation is an additional cross-cutting capability. Conservative rules suggest schema mappings for human confirmation; the LLM routes business intent and interprets results; deterministic Python owns compatibility checks, calculations, and statistical tests.
 
-This is a local prototype for the **LLM Business Application** assignment track—not a generic data-science automation tool and not an autonomous decision maker.
+FinSight is a local product prototype and portfolio case study—not a generic data-science automation tool and not an autonomous decision maker.
 
-## Assignment deliverables — start here
+## Product preview
 
-The **primary assignment deliverable** is the [FinSight business/productization plan](docs/BUSINESS_PLAN.md). It explains the business problem, target users, jobs to be done, value proposition, product design, market landscape, pricing hypothesis, go-to-market approach, success metrics, risks, and roadmap.
+![FinSight product analytics interface](docs/assets/screenshots/finsight-product-interface.png)
+
+## Product materials — start here
+
+The [FinSight business/productization plan](docs/BUSINESS_PLAN.md) explains the business problem, target users, jobs to be done, value proposition, product design, market landscape, pricing hypothesis, go-to-market approach, success metrics, risks, and roadmap.
 
 The remaining artifacts provide evidence that the proposed product can be implemented and demonstrated:
 
 | Deliverable | Purpose |
 |---|---|
-| **[Business/productization plan](docs/BUSINESS_PLAN.md)** | **Primary written submission and commercial rationale** |
+| **[Business/productization plan](docs/BUSINESS_PLAN.md)** | **Product strategy and commercial rationale** |
 | [Product overview presentation (PDF)](docs/presentation/FinSight_Product_Overview.pdf) | Concise presentation of positioning, use cases, architecture, and business value |
 | [Runnable prototype](app.py) | Local proof of the proposed user experience and governed analytics workflow |
 | [Product specification](docs/PRODUCT_SPEC.md) | Supported users, analyses, requirements, error states, and non-goals |
 | [Architecture](docs/ARCHITECTURE.md) | Separation between LLM responsibilities and deterministic Python |
-| [Submission and demo guide](docs/SUBMISSION_GUIDE.md) | Setup, validation, demonstration sequence, and submission boundaries |
+| [Demo and evaluation guide](docs/DEMO_GUIDE.md) | Setup, validation, demonstration sequence, and safety boundaries |
 
 ## Demo story
 
@@ -123,8 +127,8 @@ The audit trail records non-sensitive provenance metadata: source type, file nam
 - `docs/ARCHITECTURE.md` — system contract, boundaries, and production hardening
 - `docs/BUSINESS_PLAN.md` — users, value proposition, landscape, pricing, GTM, risks, roadmap
 - `docs/PRODUCT_SPEC.md` — workflows, requirements, error states, non-goals, acceptance criteria
-- `docs/SUBMISSION_GUIDE.md` — deliverables, demo sequence, validation, and submission safety
-- `docs/presentation/` — PDF presentation for the assignment/demo
+- `docs/DEMO_GUIDE.md` — product materials, demo sequence, validation, and safety boundaries
+- `docs/presentation/` — PDF product-overview presentation
 - `tests/` — analytical ground-truth and routing tests
 
 ## Upload test pack
@@ -144,7 +148,7 @@ FinSight demonstrates product KPI design, funnel and customer analysis, controll
 - [Architecture](docs/ARCHITECTURE.md)
 - [Business plan](docs/BUSINESS_PLAN.md)
 - [Product specification](docs/PRODUCT_SPEC.md)
-- [Assignment submission guide](docs/SUBMISSION_GUIDE.md)
+- [Demo and evaluation guide](docs/DEMO_GUIDE.md)
 - [Product overview slides (PDF)](docs/presentation/FinSight_Product_Overview.pdf)
 
 ## License

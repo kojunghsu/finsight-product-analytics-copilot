@@ -1,25 +1,23 @@
-# FinSight assignment submission guide
+# FinSight demo and evaluation guide
 
-## Assignment track
+## Product positioning
 
-**LLM Business Application**
-
-FinSight is a detailed business application and local prototype, not an LLM technology deep dive or a generic LLM data-scientist pipeline.
+FinSight is a focused LLM business application and local product prototype, not a generic data-scientist automation pipeline.
 
 ## Recommended review order
 
-1. Read [`BUSINESS_PLAN.md`](BUSINESS_PLAN.md) as the **primary written deliverable**.
+1. Read [`BUSINESS_PLAN.md`](BUSINESS_PLAN.md) for the product strategy and commercial rationale.
 2. Review the [`FinSight product overview PDF`](presentation/FinSight_Product_Overview.pdf) for the concise presentation narrative.
 3. Follow the local setup below and run the prototype as implementation evidence.
 4. Consult [`PRODUCT_SPEC.md`](PRODUCT_SPEC.md) and [`ARCHITECTURE.md`](ARCHITECTURE.md) for detailed product and system decisions.
 
-The prototype, tests, sample data, and technical documentation support the business/productization plan; they are not substitutes for it.
+The prototype, tests, sample data, and technical documentation provide implementation evidence for the business/productization plan.
 
-## Deliverables in this repository
+## Product materials in this repository
 
 | Deliverable | Location |
 |---|---|
-| **Primary written deliverable: business/productization plan** | **`docs/BUSINESS_PLAN.md`** |
+| **Business/productization plan** | **`docs/BUSINESS_PLAN.md`** |
 | Runnable local prototype | `app.py` and `finsight/` |
 | Product requirements and acceptance criteria | `docs/PRODUCT_SPEC.md` |
 | System and data-flow architecture | `docs/ARCHITECTURE.md` |
@@ -54,14 +52,14 @@ Add an OpenAI API key to the local `.env` file to enable LLM planning and interp
 
 The narrative is **Measure → Diagnose → Experiment → Decide**.
 
-## Validation before submission
+## Validation
 
 ```bash
 python3 -m pytest
 python3 -m ruff check .
 ```
 
-Expected automated result at the time of submission: **25 tests passed**.
+Current expected automated result: **25 tests passed**.
 
 ## Scope boundaries to state clearly
 
@@ -73,7 +71,7 @@ Expected automated result at the time of submission: **25 tests passed**.
 - Pricing, market position, and business value are hypotheses, not validated commercial results.
 - FinSight prepares decisions but does not approve product, legal, compliance, or rollout actions.
 
-## Files that must not be submitted
+## Files that must not be committed
 
 - `.env`
 - `.venv/`
@@ -82,4 +80,4 @@ Expected automated result at the time of submission: **25 tests passed**.
 - `.pytest_cache/`
 - `.ruff_cache/`
 
-These paths are excluded by `.gitignore`. The synthetic fixtures under `sample_data/` are intentional assignment assets and should be submitted. The repository contains `.env.example` only, with no API key.
+These paths are excluded by `.gitignore`. The synthetic fixtures under `sample_data/` are intentional product-demo assets and remain in the repository. The repository contains `.env.example` only, with no API key.
