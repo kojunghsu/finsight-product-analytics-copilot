@@ -2,9 +2,13 @@
 
 **LLM-powered product analytics copilot for the credit-card customer lifecycle.**
 
-FinSight inspects an uploaded customer-level dataset and determines which of four credit-card product use cases it can support: Acquisition & Onboarding, Activation & Early Use, Engagement & Spend, and Retention & Inactivity. A/B experiment evaluation is an additional cross-cutting capability. Conservative rules suggest schema mappings for human confirmation; the LLM routes business intent and interprets results; deterministic Python owns compatibility checks, calculations, and statistical tests.
+FinSight is a local prototype of an LLM business application for credit-card product analytics. Product managers and analysts can upload customer-level data and ask business questions in natural language across four lifecycle use cases: Acquisition & Onboarding, Activation & Early Use, Engagement & Spend, and Retention & Inactivity. A/B experiment evaluation is an additional cross-cutting capability.
 
-FinSight is a local product prototype and portfolio case study—not a generic data-science automation tool and not an autonomous decision maker.
+The system deliberately separates language reasoning from numerical computation. The LLM translates natural-language business questions into structured analysis plans and interprets validated results, while deterministic Python owns dataset compatibility checks, KPI calculations, funnel analysis, segmentation, and statistical tests. Conservative rules suggest schema mappings for human confirmation rather than allowing unrestricted LLM-generated mappings.
+
+With an OpenAI API key, FinSight runs in LLM-enabled mode for natural-language planning and result interpretation. Without a key, it runs in a clearly labeled deterministic demo mode, allowing the complete interface and governed analytics workflows to be evaluated locally without external credentials.
+
+FinSight is a product prototype and portfolio case study—not a generic data-science automation tool and not an autonomous decision maker.
 
 ## Product preview
 
@@ -45,7 +49,7 @@ The synthetic generator intentionally embeds testable patterns: Android and Paid
 - Engagement/spend and retention/inactivity KPI modules
 - Governed A/B workflow with experiment data-quality checks, lift, confidence interval, p-value, guardrail, SRM, approximate Power/MDE context, deterministic decision gates, and directional segment consistency
 - Streamlit chat UI with upload, charts, and an auditable plan/result trace
-- Offline deterministic demo mode when no API key is present
+- LLM-enabled mode for natural-language planning and result interpretation, with an offline deterministic demo mode for evaluation without API credentials
 - Tests plus architecture and productization documentation
 
 ## Local setup
@@ -58,7 +62,7 @@ cp .env.example .env
 python3 -m streamlit run app.py
 ```
 
-To enable real LLM planning and interpretation, add `OPENAI_API_KEY` to `.env`. The default model can be changed with `OPENAI_MODEL`. Without a key, the complete UI and analytics engine run in clearly labeled deterministic demo mode.
+To enable LLM-based planning and interpretation, add `OPENAI_API_KEY` to `.env`. The default model can be changed with `OPENAI_MODEL`. Without a key, the complete UI and analytics engine run in clearly labeled deterministic demo mode.
 
 Generate a CSV explicitly:
 
@@ -75,7 +79,7 @@ python3 -m ruff check .
 
 ## Data contract
 
-FinSight no longer requires every uploaded CSV to contain one universal schema. Each use case has its own minimum data contract:
+FinSight does not require every uploaded CSV to contain a universal schema. Each use case has its own minimum data contract:
 
 | Credit-card use case | Minimum confirmed fields |
 |---|---|
