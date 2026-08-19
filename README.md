@@ -8,8 +8,6 @@ The system deliberately separates language reasoning from numerical computation.
 
 With an OpenAI API key, FinSight runs in LLM-enabled mode for natural-language planning and result interpretation. Without a key, it runs in a clearly labeled deterministic demo mode, allowing the complete interface and governed analytics workflows to be evaluated locally without external credentials.
 
-FinSight is a product prototype and portfolio case study—not a generic data-science automation tool and not an autonomous decision maker.
-
 ## Product preview
 
 ![FinSight product analytics interface](docs/assets/screenshots/finsight-product-interface.png)
